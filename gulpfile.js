@@ -130,7 +130,7 @@ function generateServiceWorker() {
   return workbox.generateSW({
     globDirectory: DEST_DIR,
     globPatterns: [
-      '**/*.{html,js,png,ico,mp3,json}',
+      '**/*.{html,js,png,jpg,gif,ico}',
     ],
     swDest: `${DEST_DIR}/service-worker.js`,
     clientsClaim: true,
