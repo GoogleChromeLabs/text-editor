@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2019 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  Author: Pete LePage (petele@google.com)
+-->
+<html lang="en">
+  <head>
+    <title>Text Editor</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- SEO description and info -->
+    <meta name="description" content="Text Editor - Demo for the HTML5 Native File System.">
+    <link rel="canonical" href="https://googlechromelabs.github.io/text-editor/">
+
+    <!-- Manifest and icons -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <meta name="theme-color" content="#1a237e">
+    <link rel="apple-touch-icon" sizes="192x192" href="/images/icon-192.png">
+
+    <!-- Add to homescreen for Chrome on Android. -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Text Edit">
+
+    <!-- Tile icon for Windows 8 (144x144 + tile color) -->
+    <meta name="msapplication-TileImage" content="/images/icon-144.png">
+    <meta name="msapplication-TileColor" content="#1a237e">
+    <meta name="msapplication-tap-highlight" content="no">
+
+    <!-- Default twitter cards -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:url" content="https://googlechromelabs.github.io/text-editor/">
+    <meta name="twitter:title" content="Text Editor">
+    <meta name="twitter:description" content="Text Editor - Demo for the HTML5 Native File System.">
+    <meta name="twitter:image" content="/images/icon-192.png">
+    <meta name="twitter:creator" content="@petele">
+
+    <!-- Other sharing -->
+    <meta property="og:title" content="Text Editor">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/images/icon-192.png">
+    <meta property="og:url" content="https://googlechromelabs.github.io/text-editor/">
+    <meta property="og:description" content="Text Editor - Demo for the HTML5 Native File System.">
+
+    <!-- Analytics -->
+    <script src="/inline-scripts/analytics.js" inline></script>
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/styles/main.css" inline>
+    <link rel="stylesheet" href="/styles/standalone.css" inline>
+    <link rel="stylesheet" media="print" href="/styles/print.css" inline>
+
+  </head>
+  <body class="wordwrap">
+
+    <header>
+      <h1>
+        <span id="headerFileName">Untitled</span><span id="modifiedHeader" class="hidden">*</span>
+        - Text Editor
+      </h1>
+      <nav class="menubar">
+        <div id="menuFile" class="menuContainer">
+          <button id="butFile" class="menuTop" aria-label="File" aria-haspopup="true" aria-expanded="false">
+            <span class="kbdShortcut">F</span>ile
+          </button>
+          <div role="menu" class="menuItemContainer hidden">
+            <button id="butNew" type="button" role="menuitem">
+              New <kbd>^N</kbd>
+            </button>
+            <button id="butOpen" type="button" role="menuitem">
+              Open <kbd>^O</kbd>
+            </button>
+            <button id="butSave" type="button" role="menuitem">
+              Save <kbd>^S</kbd>
+            </button>
+            <button id="butSaveAs" type="button" role="menuitem">
+              Save As
+            </button>
+            <button id="butClose" type="button" role="menuitem">
+              Close <kbd>^W</kbd>
+            </button>
+          </div>
+        </div>
+        <div id="menuEdit" class="menuContainer">
+          <button id="butEdit" class="menuTop" aria-label="Edit" aria-haspopup="true" aria-expanded="false">
+              <span class="kbdShortcut">E</span>dit
+          </button>
+          <div role="menu" class="menuItemContainer hidden">
+            <button id="butCut" type="button" role="menuitem">
+              Cut <kbd>^X</kbd>
+            </button>
+            <button id="butCopy" type="button" role="menuitem">
+              Copy <kbd>^C</kbd>
+            </button>
+            <button id="butPaste" type="button" role="menuitem">
+              Paste <kbd>^V</kbd>
+            </button>
+          </div>
+        </div>
+        <div id="menuView" class="menuContainer">
+          <button id="butView" class="menuTop" aria-label="View" aria-haspopup="true" aria-expanded="false">
+              <span class="kbdShortcut">V</span>iew
+          </button>
+          <div role="menu" class="menuItemContainer hidden">
+            <button id="butWordWrap" type="button" aria-checked="true" role="menuitemcheckbox">
+              Word Wrap
+            </button>
+            <button id="butMonospace" type="button" aria-checked="false" role="menuitemcheckbox">
+              Monospace Font
+            </button>
+            <button id="butCaptureTabs" type="button" aria-checked="true" role="menuitemcheckbox">
+              Capture Tabs <kbd>^&uparrow;M</kbd>
+            </button>
+            <button id="butFontBigger" type="button" role="menuitem">
+              Increase Font Size
+            </button>
+            <button id="butFontSmaller" type="button" role="menuitem">
+              Decrease Font Size
+            </button>
+          </div>
+        </div>
+        <div id="menuInstall" class="menuContainer">
+          <button id="butInstall" aria-label="Install" class="menuTop hidden">
+              <span class="kbdShortcut">I</span>nstall
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <textarea id="textEditor" autofocus spellcheck="true" disabled
+              aria-label="Text Editor"></textarea>
+
+    <details id="footer" class="footer">
+      <summary>About
+        <span>
+          <span id="modifiedFooter" class="hidden">*</span>
+          <span id="tabMovesFocus" class="hidden">Tab Moves Focus</span>
+        </span>
+      </summary>
+      <div id="not-supported">
+        Sorry, the
+        <a href="https://wicg.github.io/native-file-system/">Native File System API</a>
+        is <b>not</b> supported in this browser yet. If you're running Chrome,
+        you can try enabling the
+        <code>#native-file-system-api</code> flag in
+        <code>chrome://flags</code>.
+      </div>
+      <div>
+        Text Editor is a simple text editor similar to notepad that makes
+        it easy to edit text files on your local file system. It shows how
+        to easily use the new HTML5 Native File System APIs. To learn more
+        about the Native File System APIs and how this demo was built, check out
+        <a href="https://developers.google.com/web/updates/">The native file system APIs</a>
+        article on Web Fundamentals, or see the
+        <a href="#">source code on GitHub</a>.
+        Written by <a href="https://twitter.com/petele">Pete LePage</a>.
+        <small id="lastUpdated">
+          Last Updated: [[BUILD_DATE]] (v[[VERSION]])
+        </small>
+      </div>
+    </details>
+
+    <!-- import the webpage's javascript file -->
+    <script src="/inline-scripts/base.js" inline></script>
+    <script src="/inline-scripts/rum.js" inline></script>
+    <script src="/inline-scripts/menus.js" inline></script>
+    <script src="/inline-scripts/app.js" inline></script>
+    <script src="/inline-scripts/text-area.js" inline></script>
+    <script src="/inline-scripts/fs-helpers.js" inline></script>
+    <script src="/inline-scripts/menu-file.js" inline></script>
+    <script src="/inline-scripts/menu-edit.js" inline></script>
+    <script src="/inline-scripts/menu-view.js" inline></script>
+    <script src="/inline-scripts/ui.js" inline></script>
+    <script src="/inline-scripts/keyboard-events.js" inline></script>
+    <script src="/inline-scripts/load-sw.js" inline></script>
+    <script src="/inline-scripts/app-install.js" inline></script>
+
+  </body>
+</html>

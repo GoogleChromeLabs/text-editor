@@ -1,0 +1,240 @@
+/**
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+html {
+  /* Material Indigo */
+  --color-900: #1a237e;
+  --color-800: #283593;
+  --color-700: #303f9f;
+  --color-600: #3949ab;
+  --color-500: #3f51b5;
+  --color-200: #9fa8da;
+  --color-100: #c5cae9;
+  --color-50: #e8eaf6;
+  --color-10: #f0f2fe; /* doesn't exist in MD, added 8 to each RGB from 50 */
+  --gray-300: #e0e0e0;
+  --gray-50: #FAFAFA;
+
+  --app-header-bg: var(--color-800);
+  --app-header-bg-highlight: var(--color-600);
+  --app-header-color: var(--gray-50);
+
+  --app-menu-color: var(--color-900);
+  --app-menu-bg: var(--color-10);
+  --app-menu-selected: var(--color-600);
+  --app-menu-bg-highlight: var(--color-100);
+
+  --app-menu-toggled-bg: var(--color-600);
+  --app-menu-toggled-color: var(--color-10);
+
+  --app-editor-bg: white;
+  --app-editor-bg-disabled: var(--gray-300);
+
+  --app-footer-bg: var(--app-header-bg);
+  --app-footer-color: var(--color-100);
+  --app-footer-color-light: var(--color-10);
+}
+
+body, html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: 0;
+  /* Prevent pull to refresh */
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.xsmall {
+  font-size: x-small;
+}
+
+header {
+  background-color: var(--app-header-bg);
+  color: var(--app-header-color);
+}
+
+header {
+  user-select: none;
+}
+
+header h1 {
+  font-size: x-large;
+  margin: 0;
+  padding: 4px 14px 0;
+}
+
+/********************
+ * Menu items
+ *******************/
+
+ button[disabled] {
+  opacity: 0.5;
+}
+
+.menuContainer {
+  display: inline-block;
+  position: relative;
+}
+
+.menuContainer > button {
+  background-color: inherit;
+  color: inherit;
+  min-width: 48px;
+  padding: 4px 16px;
+}
+
+body.altKey .kbdShortcut {
+  text-decoration: underline;
+}
+
+.menuContainer button {
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.menuContainer button:focus {
+  outline: none;
+}
+
+.menuContainer .menuItemContainer {
+  background-color: var(--app-menu-bg);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  min-width: 180px;
+  position: absolute;
+  z-index: 1;
+}
+
+.menuContainer .menuItemContainer button {
+  background-color: var(--app-menu-bg);
+  color: var(--app-menu-color);
+  display: block;
+  padding: 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.menuContainer kbd {
+  float: right;
+  font-family: inherit;
+}
+
+.menuContainer > button:hover,
+.menuContainer > button:focus,
+.menuContainer > button[aria-expanded="true"] {
+  background-color: var(--app-menu-selected);
+}
+
+.menuItemContainer button:hover,
+.menuItemContainer button:focus {
+  background-color: var(--app-menu-bg-highlight);
+}
+
+.menuContainer button[aria-checked=true] {
+  background-color: var(--app-menu-toggled-bg);
+  color: var(--app-menu-toggled-color);
+}
+
+header #butClose {
+  /* Only shown in standalone */
+  display: none;
+}
+
+/********************
+ * Text Area
+ *******************/
+
+textarea {
+  background-color: var(--app-editor-bg);
+  box-sizing: border-box;
+  flex-grow: 1;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  padding: 2px;
+  white-space: pre;
+  width: 100%;
+}
+
+textarea[disabled] {
+  background-color: var(--app-editor-bg-disabled);
+}
+
+textarea:focus {
+  outline: none;
+}
+
+body.monospace textarea {
+  font-family: monospace;
+}
+
+body.wordwrap textarea {
+  white-space: normal;
+}
+
+/********************
+ * Details (footer)
+ *******************/
+
+details {
+  background-color: var(--app-footer-bg);
+  color: var(--app-footer-color);
+  padding: 16px;
+}
+
+details summary {
+  cursor: pointer;
+}
+
+details summary:focus {
+  /* outline: none; */
+}
+
+summary > span {
+  float: right;
+}
+
+#tabMovesFocus {
+  background-color: var(--color-10);
+  border-radius: 4px;
+  color: var(--color-900);
+  font-size: 0.75em;
+  padding: 4px;
+}
+
+details #not-supported {
+  color: var(--app-footer-color-light);
+}
+
+details a, details a:visited {
+  color: var(--app-footer-color-light);
+}
+
+details div {
+  margin-top: 1em;
+}
+
+#lastUpdated {
+  display: block;
+  margin-top: 8px;
+}

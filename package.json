@@ -1,0 +1,45 @@
+{
+  "name": "text-editor",
+  "description": "Text Editor - Demo for the HTML5 Native File System.",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoogleChromeLabs/text-editor.git"
+  },
+  "homepage": "https://googlechromelabs.github.io/text-editor/",
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.2",
+    "babel-eslint": "^10.0.2",
+    "del": "^5.0.0",
+    "eslint": "^6.0.1",
+    "eslint-config-google": "^0.13.0",
+    "eslint-plugin-html": "^6.0.0",
+    "fs-extra": "^8.1.0",
+    "gh-pages": "^2.0.1",
+    "gulp": "^4.0.2",
+    "gulp-connect": "^5.7.0",
+    "gulp-copy": "^4.0.1",
+    "gulp-csso": "^3.0.1",
+    "gulp-eslint": "^6.0.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-inline-source": "^4.0.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-terser": "^1.2.0",
+    "semver": "^6.2.0",
+    "workbox-build": "^4.3.1"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "build-prod": "gulp buildProd",
+    "clean": "gulp clean",
+    "deploy": "gulp deployProd",
+    "lint": "gulp lint",
+    "serve": "gulp serve",
+    "serve-prod": "gulp serveProd",
+    "start": "gulp serve"
+  }
+}

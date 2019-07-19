@@ -1,0 +1,13 @@
+build/
+bower_components/
+node_modules/
+scratch/
+docs/
+.firebase/
+
+.DS_Store
+package-lock.json
+
+.log
+.tmp
+.sass-cache

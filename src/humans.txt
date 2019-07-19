@@ -1,0 +1,12 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+/* TEAM */
+
+Pete LePage
+Site: https://petelepage.com
+Twitter: @petele
+
+/* TECHNOLOGY COLOPHON */
+
+  HTML5, CSS3, Native File System APIs

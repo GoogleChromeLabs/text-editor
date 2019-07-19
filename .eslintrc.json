@@ -1,0 +1,42 @@
+{
+  "extends": ["eslint:recommended", "google"],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "script"
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "rules": {
+    "require-jsdoc": "warn",
+    "no-console": ["warn", {"allow": ["error"]}],
+    "strict": ["error", "global"],
+    "valid-jsdoc": ["warn", {
+      "requireParamDescription": false,
+      "requireReturnDescription": false,
+      "requireReturn": false,
+      "prefer": {
+        "returns": "return",
+        "arg": "param",
+        "argument": "param"
+      },
+      "preferType": {
+        "object": "Object",
+        "function": "Function",
+        "Boolean": "boolean",
+        "float": "number",
+        "String": "string"
+      },
+      "requireReturnType": true
+    }],
+    "no-warning-comments": ["warn", {
+      "terms": ["todo", "fixme"],
+      "location": "anywhere"
+    }]
+  }
+}
