@@ -192,6 +192,18 @@ body.wordwrap textarea {
   white-space: normal;
 }
 
+/*
+ *
+ */
+
+#aDownloadFile {
+  display: none;
+}
+
+#filePicker {
+  display: none;
+}
+
 /********************
  * Details (footer)
  *******************/

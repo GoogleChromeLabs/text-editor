@@ -35,12 +35,14 @@ if ('chooseFileSystemEntries' in window) {
   const footerContainer = document.getElementById('footer');
   footerContainer.setAttribute('open', true);
   // Disable all of the menu items
-  const elems = document.querySelectorAll('header button');
-  elems.forEach((butt) => {
-    butt.setAttribute('disabled', true);
-  });
+  // const elems = document.querySelectorAll('header button');
+  // elems.forEach((butt) => {
+  //   butt.setAttribute('disabled', true);
+  // });
   gaEvent('File System APIs', 'Not Supported');
 }
+
+app.editor.removeAttribute('disabled');
 
 /**
  * Creates an empty notepad with no details in it.
@@ -64,9 +66,15 @@ async function openFile() {
   if (!confirmDiscard()) {
     return;
   }
+  if (app.noFS) {
+    filePicker.click();
+    gaEvent('File Action', 'Open Legacy');
+    return;
+  }
   try {
     const fileHandle = await getFileHandle();
-    const contents = await readFile(fileHandle);
+    const file = await fileHandle.getFile();
+    const contents = await readFile(file);
     app.editor.value = contents;
     app.fileHandle = fileHandle;
     setFilename(fileHandle.name);
@@ -102,6 +110,9 @@ async function saveFile() {
  * Saves a new file to disk.
  */
 async function saveFileAs() {
+  if (app.noFS) {
+    return downloadToSave(null, app.editor.value);
+  }
   try {
     const fileHandle = await getNewFileHandle();
     await writeFile(fileHandle, app.editor.value);
