@@ -193,6 +193,18 @@ body.wordwrap textarea {
 }
 
 /********************
+ * Legacy download & upload elements
+ *******************/
+
+#aDownloadFile {
+  display: none;
+}
+
+#filePicker {
+  display: none;
+}
+
+/********************
  * Details (footer)
  *******************/
 
@@ -206,15 +218,11 @@ details summary {
   cursor: pointer;
 }
 
-details summary:focus {
-  /* outline: none; */
-}
-
 summary > span {
   float: right;
 }
 
-#tabMovesFocus {
+.footer-label {
   background-color: var(--color-10);
   border-radius: 4px;
   color: var(--color-900);

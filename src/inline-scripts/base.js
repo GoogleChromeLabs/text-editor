@@ -19,6 +19,7 @@
 
 const app = {
   appName: 'Text Editor',
+  fileName: null,
   fileHandle: null,
   isModified: false,
   editor: document.getElementById('textEditor'),

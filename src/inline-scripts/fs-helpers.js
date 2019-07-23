@@ -48,11 +48,10 @@ function getNewFileHandle() {
 /**
  * Reads the raw text from a file.
  *
- * @param {FileSystemFileHandle} fileHandle
+ * @param {File} file
  * @return {!Promise<string>} A promise that resolves to the parsed string.
  */
-async function readFile(fileHandle) {
-  const file = await fileHandle.getFile();
+async function readFile(file) {
   if (file.text) {
     return await _readFileBlob(file);
   }
