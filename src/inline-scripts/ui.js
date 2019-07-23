@@ -19,6 +19,7 @@
 /* globals app */
 
 const spanFileName = document.getElementById('headerFileName');
+const spanAppName = document.getElementById('headerAppName');
 const modifiedHeader = document.getElementById('modifiedHeader');
 const modifiedFooter = document.getElementById('modifiedFooter');
 
@@ -52,10 +53,13 @@ function setFilename(filename) {
   if (filename) {
     document.title = `${filename} - ${app.appName}`;
     spanFileName.textContent = filename;
+    spanAppName.classList.toggle('hidden', false);
   } else {
     document.title = app.appName;
-    spanFileName.textContent = 'Untitled';
+    spanFileName.textContent = app.appName;
+    spanAppName.classList.toggle('hidden', true);
   }
+  app.fileName = filename;
 }
 
 /**
@@ -64,6 +68,9 @@ function setFilename(filename) {
  * @param {boolean} val True if the file has been modified.
  */
 function setModified(val) {
+  if (app.noFS) {
+    return;
+  }
   const hidden = !val;
   modifiedHeader.classList.toggle('hidden', hidden);
   modifiedFooter.classList.toggle('hidden', hidden);

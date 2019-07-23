@@ -15,29 +15,42 @@
  */
 
 'use strict';
+/* exported getFileLegacy, saveAsLegacy */
 
 const filePicker = document.getElementById('filePicker');
-filePicker.addEventListener('change', async (e) => {
-  const file = filePicker.files[0];
-  if (!file) {
-    return;
-  }
-  const contents = await readFile(file);
-  app.editor.value = contents;
-  setFilename(file.name);
-});
-
 const aDownloadFile = document.getElementById('aDownloadFile');
 
 /**
+ * Uses the <input type="file"> to open a new file
  *
+ * @return {!Promise<File>} File selected by the user.
  */
-function downloadToSave(filename, contents) {
+function getFileLegacy() {
+  return new Promise((resolve, reject) => {
+    filePicker.onchange = (e) => {
+      const file = filePicker.files[0];
+      if (file) {
+        resolve(file);
+        return;
+      }
+      reject(new Error('AbortError'));
+    };
+    filePicker.click();
+  });
+}
+
+/**
+ * Saves a file by creating a downloadable instance, and clicking on the
+ * download link.
+ *
+ * @param {string} filename Filename to save the file as.
+ * @param {string} contents Contents of the file to save.
+ */
+function saveAsLegacy(filename, contents) {
   filename = filename || 'Untitled.txt';
   const opts = {type: 'text/plain'};
-  const file = new File([contents], 'Untitled.txt', opts);
+  const file = new File([contents], '', opts);
   aDownloadFile.href = window.URL.createObjectURL(file);
   aDownloadFile.setAttribute('download', filename);
   aDownloadFile.click();
-  gaEvent('File Action', 'Save Legacy');
-};
+}

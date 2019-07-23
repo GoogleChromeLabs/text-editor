@@ -15,11 +15,20 @@
  */
 
 'use strict';
-/* globals newFile, openFile, saveFile, quitApp */
+/* globals newFile, openFile, saveFile, saveFileAs, quitApp */
 /* globals toggleCaptureTabs */
 
 /* Handle keyboard events */
 window.addEventListener('keydown', (e) => {
+  // console.log('key', e.code, e.ctrlKey, e.metaKey, e.shiftKey, e.key);
+
+  // Save As
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyS') {
+    e.preventDefault();
+    saveFileAs();
+    return;
+  }
+
   // Save
   if ((e.ctrlKey === true || e.metaKey === true) && e.key === 's') {
     e.preventDefault();

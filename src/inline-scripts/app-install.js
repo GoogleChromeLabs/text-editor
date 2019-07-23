@@ -32,11 +32,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Log that install is available.
   gaEvent('Install', 'available');
 
-  // If FS isn't supported, don't show the install prompt
-  if (app.noFS) {
-    return;
-  }
-
   // Save the deferred prompt
   app.deferredPrompt = e;
 

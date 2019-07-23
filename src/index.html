@@ -70,8 +70,8 @@
 
     <header>
       <h1>
-        <span id="headerFileName">Untitled</span><span id="modifiedHeader" class="hidden">*</span>
-        - Text Editor
+        <span id="headerFileName">Text Editor</span><span id="modifiedHeader" class="hidden">*</span>
+        <span id="headerAppName" class="hidden"> - Text Editor</span>
       </h1>
       <nav class="menubar">
         <div id="menuFile" class="menuContainer">
@@ -89,7 +89,7 @@
               Save <kbd>^S</kbd>
             </button>
             <button id="butSaveAs" type="button" role="menuitem">
-              Save As
+              Save As <kbd>^&uparrow;S</kbd>
             </button>
             <button id="butClose" type="button" role="menuitem">
               Close <kbd>^W</kbd>
@@ -152,16 +152,18 @@
       <summary>About
         <span>
           <span id="modifiedFooter" class="hidden">*</span>
-          <span id="tabMovesFocus" class="hidden">Tab Moves Focus</span>
+          <span id="legacyFSLabel" class="hidden footer-label">Legacy Mode</span>
+          <span id="tabMovesFocus" class="hidden footer-label">Tab Moves Focus</span>
         </span>
       </summary>
       <div id="not-supported">
-        Sorry, the
+        The
         <a href="https://wicg.github.io/native-file-system/">Native File System API</a>
-        is <b>not</b> supported in this browser yet. If you're running Chrome,
-        you can try enabling the
-        <code>#native-file-system-api</code> flag in
-        <code>chrome://flags</code>.
+        is <b>not</b> supported in this browser yet, and the app is running
+        in legacy mode. In legacy mode, file modified indicators are not shown.
+        If you're running Chrome, you can enable the Native File System
+        APIs by enabling the <code>#native-file-system-api</code>
+        flag in <code>chrome://flags</code>.
       </div>
       <div>
         Text Editor is a simple text editor similar to notepad that makes
