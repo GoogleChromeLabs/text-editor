@@ -16,59 +16,62 @@
 
 'use strict';
 
-/* exported newFile, openFile, saveFile, saveFileAs, quitApp */
-/* globals app */
-/* globals gaEvent */
-/* globals getFileLegacy, saveAsLegacy */
-/* globals confirmDiscard, setFilename, setModified */
-/* globals setFocus */
 /* globals getFileHandle, getNewFileHandle, readFile, writeFile */
 
+// eslint-disable-next-line no-redeclare
+const app = {
+  appName: 'Text Editor',
+  file: {
+    handle: null,
+    name: null,
+    isModified: false,
+  },
+  options: {
+    captureTabs: true,
+    fontSize: 14,
+    monoSpace: false,
+    wordWrap: true,
+  },
+  hasNativeFS: 'chooseFileSystemEntries' in window,
+  isMac: navigator.userAgent.includes('Mac OS X'),
+};
 
 // Verify the APIs we need are supported, show a polite warning if not.
-if ('chooseFileSystemEntries' in window) {
-  const divNotSupported = document.getElementById('not-supported');
-  divNotSupported.classList.add('hidden');
-  app.editor.removeAttribute('disabled');
+if (app.hasNativeFS) {
+  document.getElementById('not-supported').classList.add('hidden');
   gaEvent('File System APIs', 'Native');
 } else {
-  app.noFS = true;
-  document.getElementById('legacyFSLabel').classList.toggle('hidden', false);
+  document.getElementById('lblLegacyFS').classList.toggle('hidden', false);
   document.getElementById('butSave').classList.toggle('hidden', true);
   gaEvent('File System APIs', 'Legacy');
 }
 
-app.editor.removeAttribute('disabled');
-
 /**
  * Creates an empty notepad with no details in it.
  */
-function newFile() {
-  if (!confirmDiscard()) {
+app.newFile = () => {
+  if (!app.confirmDiscard()) {
     return;
   }
-  app.editor.value = '';
-  app.fileHandle = null;
-  setFilename();
-  setModified(false);
-  setFocus(true);
+  app.setText();
+  app.setFile();
+  app.setModified(false);
+  app.setFocus(true);
   gaEvent('FileAction', 'New');
-}
+};
+
 
 /**
  * Opens a file for reading.
  */
-async function openFile() {
-  if (!confirmDiscard()) {
+app.openFile = async () => {
+  if (!app.confirmDiscard()) {
     return;
   }
   let file;
   let fileHandle;
 
-  if (app.noFS) {
-    gaEvent('FileAction', 'Open', 'Legacy');
-    file = await getFileLegacy();
-  } else {
+  if (app.hasNativeFS) {
     try {
       gaEvent('FileAction', 'Open', 'Native');
       fileHandle = await getFileHandle();
@@ -82,6 +85,9 @@ async function openFile() {
       console.error(msg, ex);
       alert(msg);
     }
+  } else {
+    gaEvent('FileAction', 'Open', 'Legacy');
+    file = await app.getFileLegacy();
   }
 
   if (!file) {
@@ -89,89 +95,84 @@ async function openFile() {
   }
 
   try {
-    const contents = await readFile(file);
-    // eslint-disable-next-line require-atomic-updates
-    app.editor.value = contents;
-    // eslint-disable-next-line require-atomic-updates
-    app.fileHandle = fileHandle;
-    setFilename(file.name);
-    setModified(false);
-    setFocus(true);
+    app.setText(await readFile(file));
+    app.setFile(fileHandle || file.name);
+    app.setModified(false);
+    app.setFocus(true);
   } catch (ex) {
     gaEvent('Error', 'FileRead', ex.name);
     const msg = `An error occured reading ${app.fileName}`;
     console.error(msg, ex);
     alert(msg);
   }
-}
+};
 
 /**
  * Saves a file to disk.
  */
-async function saveFile() {
-  const fileHandle = app.fileHandle;
+app.saveFile = async () => {
   try {
-    if (!fileHandle) {
-      return await saveFileAs();
+    if (!app.file.handle) {
+      return await app.saveFileAs();
     }
     gaEvent('FileAction', 'Save');
-    await writeFile(fileHandle, app.editor.value);
-    setModified(false);
+    await writeFile(app.file.handle, app.getText());
+    app.setModified(false);
   } catch (ex) {
     gaEvent('Error', 'FileSave', ex.name);
     const msg = 'Unable to save file';
     console.error(msg, ex);
     alert(msg);
   }
-  setFocus();
-}
+  app.setFocus();
+};
 
 /**
  * Saves a new file to disk.
  */
-async function saveFileAs() {
-  if (app.noFS) {
+app.saveFileAs = async () => {
+  if (!app.hasNativeFS) {
     gaEvent('FileAction', 'Save As', 'Legacy');
-    saveAsLegacy(app.fileName, app.editor.value);
-    setModified(false);
-  } else {
-    gaEvent('FileAction', 'Save As', 'Native');
-    let fileHandle;
-    try {
-      fileHandle = await getNewFileHandle();
-    } catch (ex) {
-      if (ex.name === 'AbortError') {
-        return;
-      }
-      gaEvent('Error', 'FileSaveAs1', ex.name);
-      const msg = 'An error occured trying to open the file.';
-      console.error(msg, ex);
-      alert(msg);
-    }
-    try {
-      await writeFile(fileHandle, app.editor.value);
-      // eslint-disable-next-line require-atomic-updates
-      app.fileHandle = fileHandle;
-      setFilename(fileHandle.name);
-      setModified(false);
-    } catch (ex) {
-      gaEvent('Error', 'FileSaveAs2', ex.name);
-      const msg = 'Unable to save file.';
-      console.error(msg, ex);
-      alert(msg);
-      gaEvent('Error', 'Unable to write file', 'Native');
-    }
+    app.saveAsLegacy(app.file.name, app.getText());
+    app.setFocus();
+    return;
   }
-  setFocus();
-}
+  gaEvent('FileAction', 'Save As', 'Native');
+  let fileHandle;
+  try {
+    fileHandle = await getNewFileHandle();
+  } catch (ex) {
+    if (ex.name === 'AbortError') {
+      return;
+    }
+    gaEvent('Error', 'FileSaveAs1', ex.name);
+    const msg = 'An error occured trying to open the file.';
+    console.error(msg, ex);
+    alert(msg);
+    return;
+  }
+  try {
+    await writeFile(fileHandle, app.getText());
+    app.setFile(fileHandle);
+    app.setModified(false);
+  } catch (ex) {
+    gaEvent('Error', 'FileSaveAs2', ex.name);
+    const msg = 'Unable to save file.';
+    console.error(msg, ex);
+    alert(msg);
+    gaEvent('Error', 'Unable to write file', 'Native');
+    return;
+  }
+  app.setFocus();
+};
 
 /**
  * Attempts to close the window
  */
-function quitApp() {
-  if (!confirmDiscard()) {
+app.quitApp = () => {
+  if (!app.confirmDiscard()) {
     return;
   }
   gaEvent('FileAction', 'Quit');
   window.close();
-}
+};

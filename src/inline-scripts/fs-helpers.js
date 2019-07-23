@@ -15,6 +15,7 @@
  */
 
 'use strict';
+
 /* exported getFileHandle, getNewFileHandle, readFile, writeFile */
 
 /**

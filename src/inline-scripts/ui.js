@@ -15,64 +15,68 @@
  */
 
 'use strict';
-/* exported confirmDiscard, setFilename, setModified */
-/* globals app */
 
-const spanFileName = document.getElementById('headerFileName');
-const spanAppName = document.getElementById('headerAppName');
-const modifiedHeader = document.getElementById('modifiedHeader');
-const modifiedFooter = document.getElementById('modifiedFooter');
+(function(app) {
+  const spanAppName = document.getElementById('headerAppName');
+  const spanFileName = document.getElementById('headerFileName');
+  const modifiedHeader = document.getElementById('modifiedHeader');
+  const modifiedFooter = document.getElementById('modifiedFooter');
 
-// Setup the before unload listener to prevent accidental loss on navigation.
-window.addEventListener('beforeunload', (e) => {
-  const msg = `There are unsaved changes. Are you sure you want to leave?`;
-  if (app.isModified) {
-    e.preventDefault();
-    e.returnValue = msg;
-  }
-});
+  // Setup the before unload listener to prevent accidental loss on navigation.
+  window.addEventListener('beforeunload', (e) => {
+    const msg = `There are unsaved changes. Are you sure you want to leave?`;
+    if (app.file.isModified) {
+      e.preventDefault();
+      e.returnValue = msg;
+    }
+  });
 
-/**
- * Confirms user does not want to save before closing the current doc.
- *
- * @return {boolean} True if it's OK to discard.
- */
-function confirmDiscard() {
-  if (!app.isModified) {
-    return true;
-  }
-  const confirmMsg = 'Discard changes? All changes will be lost.';
-  return confirm(confirmMsg);
-}
+  /**
+   * Confirms user does not want to save before closing the current doc.
+   *
+   * @return {boolean} True if it's OK to discard.
+   */
+  app.confirmDiscard = () => {
+    if (!app.file.isModified) {
+      return true;
+    }
+    const confirmMsg = 'Discard changes? All changes will be lost.';
+    return confirm(confirmMsg);
+  };
 
-/**
- * Updates the UI with the current file name.
- * @param {string} filename Filename to display in header.
- */
-function setFilename(filename) {
-  if (filename) {
-    document.title = `${filename} - ${app.appName}`;
-    spanFileName.textContent = filename;
-    spanAppName.classList.toggle('hidden', false);
-  } else {
-    document.title = app.appName;
-    spanFileName.textContent = app.appName;
-    spanAppName.classList.toggle('hidden', true);
-  }
-  app.fileName = filename;
-}
+  /**
+   * Updates the UI with the current file name.
+   * @param {FileHandle|string} file Filename to display in header.
+   */
+  app.setFile = (file) => {
+    if (file && file.name) {
+      app.file.handle = file;
+      app.file.name = file.name;
+      document.title = `${file.name} - ${app.appName}`;
+      spanFileName.textContent = file.name;
+      spanAppName.classList.toggle('hidden', false);
+    } else {
+      app.file.handle = null;
+      app.file.name = file;
+      document.title = app.appName;
+      spanFileName.textContent = app.appName;
+      spanAppName.classList.toggle('hidden', true);
+    }
+  };
 
-/**
- * Updates the UI if the file has been modified.
- *
- * @param {boolean} val True if the file has been modified.
- */
-function setModified(val) {
-  if (app.noFS) {
-    return;
-  }
-  const hidden = !val;
-  modifiedHeader.classList.toggle('hidden', hidden);
-  modifiedFooter.classList.toggle('hidden', hidden);
-  app.isModified = val;
-}
+  /**
+   * Updates the UI if the file has been modified.
+   *
+   * @param {boolean} val True if the file has been modified.
+   */
+  app.setModified = (val) => {
+    if (!app.hasNativeFS) {
+      return;
+    }
+    app.file.isModified = val;
+    document.body.classList.toggle('modified', val);
+    const hidden = !val;
+    modifiedHeader.classList.toggle('hidden', hidden);
+    modifiedFooter.classList.toggle('hidden', hidden);
+  };
+})(app);

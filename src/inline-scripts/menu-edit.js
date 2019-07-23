@@ -15,39 +15,34 @@
  */
 
 'use strict';
-/* globals gaEvent */
-/* globals setupMenu, hideMenu */
-/* globals insertIntoDoc, setFocus */
-/* globals setModified */
 
-const menuEdit = document.getElementById('menuEdit');
-setupMenu(menuEdit);
+(function(app) {
+  const menuEdit = document.getElementById('menuEdit');
+  myMenus.setup(menuEdit);
 
-const butCut = document.getElementById('butCut');
-butCut.addEventListener('click', (e) => {
-  hideMenu(menuEdit);
-  document.execCommand('cut');
-  gaEvent('Edit', 'cut');
-});
+  document.getElementById('butCut').addEventListener('click', () => {
+    myMenus.hide(menuEdit);
+    document.execCommand('cut');
+    gaEvent('Edit', 'Cut');
+  });
 
-const butCopy = document.getElementById('butCopy');
-butCopy.addEventListener('click', (e) => {
-  hideMenu(menuEdit);
-  document.execCommand('copy');
-  gaEvent('Edit', 'copy');
-});
+  document.getElementById('butCopy').addEventListener('click', () => {
+    myMenus.hide(menuEdit);
+    document.execCommand('copy');
+    gaEvent('Edit', 'Copy');
+  });
 
-const butPaste = document.getElementById('butPaste');
-butPaste.addEventListener('click', async (e) => {
-  hideMenu(menuEdit);
-  try {
-    const contents = await navigator.clipboard.readText();
-    insertIntoDoc(contents);
-    setModified(true);
-    setFocus();
-    gaEvent('Edit', 'paste');
-  } catch (ex) {
-    console.error('Unable to paste', ex);
-    gaEvent('Error - Paste', ex.name);
-  }
-});
+  document.getElementById('butPaste').addEventListener('click', async () => {
+    myMenus.hide(menuEdit);
+    try {
+      const contents = await navigator.clipboard.readText();
+      app.insertIntoDoc(contents);
+      app.setModified(true);
+      app.setFocus();
+      gaEvent('Edit', 'Paste');
+    } catch (ex) {
+      console.error('Unable to paste', ex);
+      gaEvent('Error - Paste', ex.name);
+    }
+  });
+})(app);

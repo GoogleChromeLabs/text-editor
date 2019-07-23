@@ -15,25 +15,25 @@
  */
 
 'use strict';
-/* exported addKeyboardShortcutForMenu, hideMenu, setupMenu */
-/* globals app */
-/* globals setFocus */
+
+// eslint-disable-next-line no-redeclare
+const myMenus = {};
 
 /**
  * Initializes a drop down menu.
  *
  * @param {Element} container Container element with the drop down menu.
  */
-function setupMenu(container) {
+myMenus.setup = (container) => {
   const toggleButton = container.querySelector('button.menuTop');
   toggleButton.addEventListener('click', () => {
-    _toggleMenu(toggleButton);
+    myMenus._toggle(toggleButton);
   });
-  addKeyboardShortcutForMenu(toggleButton);
+  myMenus.addKeyboardShortcut(toggleButton);
   container.addEventListener('keydown', (e) => {
     if (e.keyCode === 27) {
-      hideAllMenus();
-      setFocus();
+      myMenus.hideAll();
+      app.setFocus();
       return;
     }
     if (e.keyCode === 40) {
@@ -51,28 +51,14 @@ function setupMenu(container) {
       return;
     }
   });
-}
-
-/* Show shortcuts on menu items when ALT key is pressed, non-Mac only */
-if (!app.isMac) {
-  window.addEventListener('keydown', (e) => {
-    if (e.altKey === true && e.key === 'Alt') {
-      document.body.classList.toggle('altKey', true);
-    }
-  });
-  window.addEventListener('keyup', (e) => {
-    if (e.key === 'Alt') {
-      document.body.classList.toggle('altKey', false);
-    }
-  });
-}
+};
 
 /**
  * Initializes a drop down menu.
  *
  * @param {Element} button Toggle button to show/hide menu.
  */
-function addKeyboardShortcutForMenu(button) {
+myMenus.addKeyboardShortcut = (button) => {
   if (app.isMac) {
     // Keyboard shortcuts aren't available on mac.
     return;
@@ -91,46 +77,46 @@ function addKeyboardShortcutForMenu(button) {
       button.click();
     }
   });
-}
+};
 
 /**
  * Hides all visible menus.
  */
-function hideAllMenus() {
+myMenus.hideAll = () => {
   const elems = document.querySelectorAll('.menuContainer');
   elems.forEach((elem) => {
-    hideMenu(elem);
+    myMenus.hide(elem);
   });
-}
+};
 
 /**
  * Hides a menu dropdown.
  *
  * @param {Element} menuContainer Container element with the drop down menu.
  */
-function hideMenu(menuContainer) {
+myMenus.hide = (menuContainer) => {
   const button = menuContainer.querySelector('.menuTop');
   button.setAttribute('aria-expanded', false);
   const panel = menuContainer.querySelector('.menuItemContainer');
   if (panel) {
     panel.classList.toggle('hidden', true);
   }
-}
+};
 
 /**
  * Shows a menu dropdown.
  *
  * @param {Element} menuContainer Container element with the drop down menu.
  */
-function showMenu(menuContainer) {
-  hideAllMenus();
+myMenus.show = (menuContainer) => {
+  myMenus.hideAll();
   const button = menuContainer.querySelector('.menuTop');
   button.setAttribute('aria-expanded', true);
   const panel = menuContainer.querySelector('.menuItemContainer');
   panel.classList.toggle('hidden', false);
   const firstButton = panel.querySelector('button');
   firstButton.focus();
-}
+};
 
 /**
  * Toggles a menu open or closed.
@@ -138,12 +124,27 @@ function showMenu(menuContainer) {
  * @private
  * @param {Element} button Toggle button to show/hide menu.
  */
-function _toggleMenu(button) {
+myMenus._toggle = (button) => {
   const parent = button.parentElement;
   const expanded = button.getAttribute('aria-expanded');
   if (expanded === 'true') {
-    hideMenu(parent);
+    myMenus.hide(parent);
   } else {
-    showMenu(parent);
+    myMenus.show(parent);
   }
+};
+
+
+/* Show shortcuts on menu items when ALT key is pressed, non-Mac only */
+if (!app.isMac) {
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey === true && e.key === 'Alt') {
+      document.body.classList.toggle('altKey', true);
+    }
+  });
+  window.addEventListener('keyup', (e) => {
+    if (e.key === 'Alt') {
+      document.body.classList.toggle('altKey', false);
+    }
+  });
 }

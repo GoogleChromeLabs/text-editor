@@ -15,35 +15,34 @@
  */
 
 'use strict';
-/* globals app */
-/* globals gaEvent */
-/* globals addKeyboardShortcutForMenu */
 
-window.addEventListener('appinstalled', (e) => {
-  gaEvent('Install', 'installed');
-});
+(function(app) {
+  const butInstall = document.getElementById('butInstall');
 
-const butInstall = document.getElementById('butInstall');
+  window.addEventListener('appinstalled', (e) => {
+    gaEvent('Install', 'installed');
+  });
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Don't show the mini-info bar
-  e.preventDefault();
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Don't show the mini-info bar
+    e.preventDefault();
 
-  // Log that install is available.
-  gaEvent('Install', 'available');
+    // Log that install is available.
+    gaEvent('Install', 'available');
 
-  // Save the deferred prompt
-  app.deferredPrompt = e;
+    // Save the deferred prompt
+    app.installPrompt = e;
 
-  // Show the install button
-  butInstall.removeAttribute('disabled');
-  butInstall.classList.remove('hidden');
-});
+    // Show the install button
+    butInstall.removeAttribute('disabled');
+    butInstall.classList.remove('hidden');
+  });
 
-butInstall.addEventListener('click', () => {
-  butInstall.setAttribute('disabled', true);
-  app.deferredPrompt.prompt();
-  gaEvent('Install', 'clicked');
-});
+  butInstall.addEventListener('click', () => {
+    butInstall.setAttribute('disabled', true);
+    app.installPrompt.prompt();
+    gaEvent('Install', 'clicked');
+  });
 
-addKeyboardShortcutForMenu(butInstall);
+  myMenus.addKeyboardShortcut(butInstall);
+})(app);
