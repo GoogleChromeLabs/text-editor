@@ -16,6 +16,9 @@
 
 'use strict';
 
+/**
+ * Setup keyboard shortcuts
+ */
 window.addEventListener('keydown', (e) => {
   // console.log('key', e.code, e.ctrlKey, e.metaKey, e.shiftKey, e.key);
 

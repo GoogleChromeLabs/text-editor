@@ -15,6 +15,7 @@
   "globals": {
     "app": true,
     "gaEvent": true,
+    "gaTiming": true,
     "myMenus": true
   },
   "rules": {

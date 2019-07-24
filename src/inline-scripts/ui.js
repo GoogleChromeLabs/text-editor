@@ -33,7 +33,6 @@
 
   /**
    * Confirms user does not want to save before closing the current doc.
-   *
    * @return {boolean} True if it's OK to discard.
    */
   app.confirmDiscard = () => {
@@ -66,7 +65,6 @@
 
   /**
    * Updates the UI if the file has been modified.
-   *
    * @param {boolean} val True if the file has been modified.
    */
   app.setModified = (val) => {

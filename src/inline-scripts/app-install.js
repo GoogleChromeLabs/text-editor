@@ -19,10 +19,17 @@
 (function(app) {
   const butInstall = document.getElementById('butInstall');
 
+  /**
+   * Track successful app installs
+   */
   window.addEventListener('appinstalled', (e) => {
     gaEvent('Install', 'installed');
   });
 
+  /**
+   * Listen for 'beforeinstallprompt' event, and update the UI to indicate
+   * text-editor can be installed.
+   */
   window.addEventListener('beforeinstallprompt', (e) => {
     // Don't show the mini-info bar
     e.preventDefault();
@@ -38,6 +45,7 @@
     butInstall.classList.remove('hidden');
   });
 
+  // Handle the install button click
   butInstall.addEventListener('click', () => {
     butInstall.setAttribute('disabled', true);
     app.installPrompt.prompt();

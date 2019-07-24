@@ -42,7 +42,7 @@
       gaEvent('Edit', 'Paste');
     } catch (ex) {
       console.error('Unable to paste', ex);
-      gaEvent('Error - Paste', ex.name);
+      gaEvent('Error', 'Paste', ex.name);
     }
   });
 })(app);

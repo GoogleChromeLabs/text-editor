@@ -52,29 +52,17 @@ function getNewFileHandle() {
  * @param {File} file
  * @return {!Promise<string>} A promise that resolves to the parsed string.
  */
-async function readFile(file) {
+function readFile(file) {
+  // If the new .text() reader is available, use it.
   if (file.text) {
-    return await _readFileBlob(file);
+    return file.text();
   }
-  return await _readFileLegacy(file);
+  // Otherwise use the traditional file reading technique.
+  return _readFileLegacy(file);
 }
 
 /**
  * Reads the raw text from a file.
- *  Note, used for Chrome 77 and later where .text() is supported.
- *
- * @private
- * @param {File} file
- * @return {Promise<string>} A promise that resolves to the parsed string.
- */
-function _readFileBlob(file) {
-  const result = file.text();
-  return result;
-}
-
-/**
- * Reads the raw text from a file.
- *  Note, used for Chrome 76 and earlier with the the old FileReader API.
  *
  * @private
  * @param {File} file

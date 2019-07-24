@@ -24,10 +24,12 @@
     app.setModified(true);
   });
 
+  /* Hide menus any time we start typing */
   textArea.addEventListener('focusin', () => {
     myMenus.hideAll();
   });
 
+  /* Listen for tab key */
   textArea.addEventListener('keydown', (e) => {
     if (e.key === 'Tab' && app.options.captureTabs) {
       e.preventDefault();
@@ -35,6 +37,7 @@
     }
   });
 
+  /* Initialize the textarea, set focus & font size */
   window.addEventListener('DOMContentLoaded', () => {
     textArea.style.fontSize = `${app.options.fontSize}px`;
     app.setFocus();
