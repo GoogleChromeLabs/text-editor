@@ -184,6 +184,10 @@ textarea:focus {
   outline: none;
 }
 
+body.drag-drop textarea {
+  background-color: var(--app-editor-bg-disabled);
+}
+
 body.monospace textarea {
   font-family: monospace;
 }

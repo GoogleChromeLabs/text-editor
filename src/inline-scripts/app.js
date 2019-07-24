@@ -60,43 +60,56 @@ app.newFile = () => {
   gaEvent('FileAction', 'New');
 };
 
+/**
+ * Shows the file picker, then reads the selected file.
+ */
+app.pickAndReadFile = async () => {
+  const fileObj = await app.pickFile();
+  if (fileObj) {
+    app.readFile(fileObj);
+  }
+};
 
 /**
- * Opens a file for reading.
+ * Shows the file picker.
  */
-app.openFile = async () => {
-  if (!app.confirmDiscard()) {
-    return;
-  }
-  let file;
-  let fileHandle;
-
+app.pickFile = async () => {
   if (app.hasNativeFS) {
+    gaEvent('FileAction', 'Open', 'Native');
     try {
-      gaEvent('FileAction', 'Open', 'Native');
-      fileHandle = await getFileHandle();
-      file = await fileHandle.getFile();
+      return await getFileHandle();
     } catch (ex) {
       if (ex.name === 'AbortError') {
-        return;
+        return null;
       }
       gaEvent('Error', 'FileOpen', ex.name);
       const msg = 'An error occured trying to open the file.';
       console.error(msg, ex);
       alert(msg);
     }
-  } else {
-    gaEvent('FileAction', 'Open', 'Legacy');
-    file = await app.getFileLegacy();
   }
+  gaEvent('FileAction', 'Open', 'Legacy');
+  try {
+    return await app.getFileLegacy();
+  } catch (ex) {
+    // Do nothing.
+  }
+};
 
-  if (!file) {
-    return;
+/**
+ * Read the selected file from disk, and put its contents into the editor.
+ * @param {File|FileSystemFileHandle} file The file to read from disk.
+ */
+app.readFile = async (file) => {
+  let handle;
+  if (app.hasNativeFS && file instanceof FileSystemFileHandle) {
+    handle = file;
+    file = await file.getFile();
   }
 
   try {
     app.setText(await readFile(file));
-    app.setFile(fileHandle || file.name);
+    app.setFile(handle || file.name);
     app.setModified(false);
     app.setFocus(true);
   } catch (ex) {

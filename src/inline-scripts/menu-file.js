@@ -27,7 +27,7 @@
 
   document.getElementById('butOpen').addEventListener('click', () => {
     myMenus.hide(menuFile);
-    app.openFile();
+    app.pickAndReadFile();
   });
 
   document.getElementById('butSave').addEventListener('click', () => {

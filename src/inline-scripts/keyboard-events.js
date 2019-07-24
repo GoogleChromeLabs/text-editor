@@ -39,7 +39,7 @@ window.addEventListener('keydown', (e) => {
   // Open
   if ((e.ctrlKey === true || e.metaKey === true) && e.key === 'o') {
     e.preventDefault();
-    app.openFile();
+    app.pickAndReadFile();
     return;
   }
 

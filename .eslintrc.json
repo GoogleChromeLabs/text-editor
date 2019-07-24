@@ -13,6 +13,7 @@
     "html"
   ],
   "globals": {
+    "FileSystemFileHandle": true,
     "app": true,
     "gaEvent": true,
     "gaTiming": true,
