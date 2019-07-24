@@ -15,58 +15,69 @@
  */
 
 'use strict';
-/* exported toggleCaptureTabs */
-/* globals app */
-/* globals gaEvent */
-/* globals hideMenu, setupMenu */
-/* globals adjustFontSize */
 
-const menuView = document.getElementById('menuView');
-setupMenu(menuView);
+(function(app) {
+  const menuView = document.getElementById('menuView');
+  myMenus.setup(menuView);
 
-const butWordWrap = document.getElementById('butWordWrap');
-butWordWrap.addEventListener('click', (e) => {
-  const newVal = document.body.classList.toggle('wordwrap');
-  butWordWrap.setAttribute('aria-checked', newVal);
-  gaEvent('Word Wrap', newVal ? 'true' : 'false');
-});
+  const butWordWrap = document.getElementById('butWordWrap');
+  const butMonospace = document.getElementById('butMonospace');
+  const butCaptureTabs = document.getElementById('butCaptureTabs');
+  const lblTabMovesFocus = document.getElementById('lblTabMovesFocus');
 
-const butMonospace = document.getElementById('butMonospace');
-butMonospace.addEventListener('click', (e) => {
-  const newVal = document.body.classList.toggle('monospace');
-  butMonospace.setAttribute('aria-checked', newVal);
-  hideMenu(menuView);
-  gaEvent('Font Face', newVal ? 'monospace' : 'normal');
-});
+  butWordWrap.addEventListener('click', () => {
+    myMenus.hide(menuView);
+    app.toggleWordWrap();
+  });
 
-const butCaptureTabs = document.getElementById('butCaptureTabs');
-butCaptureTabs.addEventListener('click', (e) => {
-  toggleCaptureTabs();
-  hideMenu(menuView);
-});
+  butMonospace.addEventListener('click', () => {
+    myMenus.hide(menuView);
+    app.toggleMonospace();
+  });
 
-const butFontBigger = document.getElementById('butFontBigger');
-butFontBigger.addEventListener('click', (e) => {
-  adjustFontSize(+2);
-  hideMenu(menuView);
-  gaEvent('Font Size', 'Up');
-});
+  butCaptureTabs.addEventListener('click', () => {
+    myMenus.hide(menuView);
+    app.toggleCaptureTabs();
+  });
 
-const butFontSmaller = document.getElementById('butFontSmaller');
-butFontSmaller.addEventListener('click', (e) => {
-  adjustFontSize(-2);
-  hideMenu(menuView);
-  gaEvent('Font Size', 'Down');
-});
+  document.getElementById('butFontBigger').addEventListener('click', () => {
+    myMenus.hide(menuView);
+    app.adjustFontSize(+2);
+  });
 
-const tabMovesFocus = document.getElementById('tabMovesFocus');
+  document.getElementById('butFontSmaller').addEventListener('click', () => {
+    myMenus.hide(menuView);
+    app.adjustFontSize(-2);
+  });
 
-/**
- * Toggles the capture tab functionality
- */
-function toggleCaptureTabs() {
-  const newVal = !app.captureTabs;
-  app.captureTabs = newVal;
-  butCaptureTabs.setAttribute('aria-checked', newVal);
-  tabMovesFocus.classList.toggle('hidden', newVal);
-}
+  /**
+   * Toggle word wrap
+   */
+  app.toggleWordWrap = () => {
+    const newVal = document.body.classList.toggle('wordwrap');
+    butWordWrap.setAttribute('aria-checked', newVal);
+    app.options.wordWrap = newVal;
+    gaEvent('Options', 'Word Wrap', newVal ? 'true' : 'false');
+  };
+
+  /**
+   * Toggle Monospace
+   */
+  app.toggleMonospace = () => {
+    const newVal = document.body.classList.toggle('monospace');
+    butMonospace.setAttribute('aria-checked', newVal);
+    app.options.monoSpace = newVal;
+    gaEvent('Options', 'Font Face', newVal ? 'monospace' : 'normal');
+  };
+
+  /**
+   * Toggles the capture tab functionality
+   */
+  app.toggleCaptureTabs = () => {
+    const newVal = !app.options.captureTabs;
+    app.options.captureTabs = newVal;
+    butCaptureTabs.setAttribute('aria-checked', newVal);
+    lblTabMovesFocus.classList.toggle('hidden', newVal);
+    gaEvent('Options', 'Capture Tabs', newVal);
+  };
+})(app);

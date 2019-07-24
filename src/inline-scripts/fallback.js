@@ -15,42 +15,44 @@
  */
 
 'use strict';
-/* exported getFileLegacy, saveAsLegacy */
 
-const filePicker = document.getElementById('filePicker');
-const aDownloadFile = document.getElementById('aDownloadFile');
+(function(app) {
+  const filePicker = document.getElementById('filePicker');
+  const aDownloadFile = document.getElementById('aDownloadFile');
 
-/**
- * Uses the <input type="file"> to open a new file
- *
- * @return {!Promise<File>} File selected by the user.
- */
-function getFileLegacy() {
-  return new Promise((resolve, reject) => {
-    filePicker.onchange = (e) => {
-      const file = filePicker.files[0];
-      if (file) {
-        resolve(file);
-        return;
-      }
-      reject(new Error('AbortError'));
-    };
-    filePicker.click();
-  });
-}
+  /**
+   * Uses the <input type="file"> to open a new file
+   *
+   * @return {!Promise<File>} File selected by the user.
+   */
+  app.getFileLegacy = () => {
+    return new Promise((resolve, reject) => {
+      filePicker.onchange = (e) => {
+        const file = filePicker.files[0];
+        if (file) {
+          resolve(file);
+          return;
+        }
+        reject(new Error('AbortError'));
+      };
+      filePicker.click();
+    });
+  };
 
-/**
- * Saves a file by creating a downloadable instance, and clicking on the
- * download link.
- *
- * @param {string} filename Filename to save the file as.
- * @param {string} contents Contents of the file to save.
- */
-function saveAsLegacy(filename, contents) {
-  filename = filename || 'Untitled.txt';
-  const opts = {type: 'text/plain'};
-  const file = new File([contents], '', opts);
-  aDownloadFile.href = window.URL.createObjectURL(file);
-  aDownloadFile.setAttribute('download', filename);
-  aDownloadFile.click();
-}
+  /**
+   * Saves a file by creating a downloadable instance, and clicking on the
+   * download link.
+   *
+   * @param {string} filename Filename to save the file as.
+   * @param {string} contents Contents of the file to save.
+   */
+  // function saveAsLegacy(filename, contents) {
+  app.saveAsLegacy = (filename, contents) => {
+    filename = filename || 'Untitled.txt';
+    const opts = {type: 'text/plain'};
+    const file = new File([contents], '', opts);
+    aDownloadFile.href = window.URL.createObjectURL(file);
+    aDownloadFile.setAttribute('download', filename);
+    aDownloadFile.click();
+  };
+})(app);

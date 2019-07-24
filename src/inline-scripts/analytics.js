@@ -18,18 +18,19 @@
 
 /**
  * Google Analytics are disable for the demo.
- * To enable, uncomment the sections marked by "Enable Google Analytics Here.",
+ * To enable, uncomment the two sections marked "Enable Google Analytics Here.",
  * and update the Google Analytics site ID (UA-XXXXXXX-XX).
  */
 
 /* eslint-disable */
 window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-
-/* Enable Google Analytics Here.
-ga('create', 'UA-XXXXXXX-XX', 'auto');
-ga('set', 'transport', 'beacon');
-*/
 /* esline-enable */
+
+/* Enable Google Analytics Here. */
+// ga('create', 'UA-XXXXXXX-XX', 'auto');
+// ga('set', 'transport', 'beacon');
+
+
 
 /**
  * Add Analytics script to page
@@ -41,9 +42,8 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  /* Enable Google Analytics Here.
-  const gaScript = document.createElement('script');
-  gaScript.src = 'https://www.google-analytics.com/analytics.js';
-  document.head.appendChild(gaScript);
-  */
+  /* Enable Google Analytics Here. */
+  // const gaScript = document.createElement('script');
+  // gaScript.src = 'https://www.google-analytics.com/analytics.js';
+  // document.head.appendChild(gaScript);
 });

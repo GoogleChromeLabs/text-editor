@@ -15,38 +15,33 @@
  */
 
 'use strict';
-/* globals setupMenu, hideMenu */
-/* globals newFile, openFile, saveFile, saveFileAs, quitApp */
 
-const menuFile = document.getElementById('menuFile');
-setupMenu(menuFile);
+(function(app) {
+  const menuFile = document.getElementById('menuFile');
+  myMenus.setup(menuFile);
 
-const butNewFile = document.getElementById('butNew');
-butNewFile.addEventListener('click', (e) => {
-  hideMenu(menuFile);
-  newFile();
-});
+  document.getElementById('butNew').addEventListener('click', () => {
+    myMenus.hide(menuFile);
+    app.newFile();
+  });
 
-const butOpenFile = document.getElementById('butOpen');
-butOpenFile.addEventListener('click', (e) => {
-  hideMenu(menuFile);
-  openFile();
-});
+  document.getElementById('butOpen').addEventListener('click', () => {
+    myMenus.hide(menuFile);
+    app.openFile();
+  });
 
-const butSaveFile = document.getElementById('butSave');
-butSaveFile.addEventListener('click', (e) => {
-  hideMenu(menuFile);
-  saveFile();
-});
+  document.getElementById('butSave').addEventListener('click', () => {
+    myMenus.hide(menuFile);
+    app.saveFile();
+  });
 
-const butSaveFileAs = document.getElementById('butSaveAs');
-butSaveFileAs.addEventListener('click', (e) => {
-  hideMenu(menuFile);
-  saveFileAs();
-});
+  document.getElementById('butSaveAs').addEventListener('click', () => {
+    myMenus.hide(menuFile);
+    app.saveFileAs();
+  });
 
-const butCloseFile = document.getElementById('butClose');
-butCloseFile.addEventListener('click', (e) => {
-  hideMenu(menuFile);
-  quitApp();
-});
+  document.getElementById('butClose').addEventListener('click', () => {
+    myMenus.hide(menuFile);
+    app.quitApp();
+  });
+})(app);

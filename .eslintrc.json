@@ -12,6 +12,12 @@
   "plugins": [
     "html"
   ],
+  "globals": {
+    "app": true,
+    "gaEvent": true,
+    "gaTiming": true,
+    "myMenus": true
+  },
   "rules": {
     "require-jsdoc": "warn",
     "no-console": ["warn", {"allow": ["error"]}],

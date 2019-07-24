@@ -142,7 +142,7 @@
       </nav>
     </header>
 
-    <textarea id="textEditor" autofocus spellcheck="true" disabled
+    <textarea id="textEditor" autofocus spellcheck="true"
               aria-label="Text Editor"></textarea>
 
     <a id="aDownloadFile" download></a>
@@ -152,8 +152,8 @@
       <summary>About
         <span>
           <span id="modifiedFooter" class="hidden">*</span>
-          <span id="legacyFSLabel" class="hidden footer-label">Legacy Mode</span>
-          <span id="tabMovesFocus" class="hidden footer-label">Tab Moves Focus</span>
+          <span id="lblLegacyFS" class="hidden footer-label">Legacy Mode</span>
+          <span id="lblTabMovesFocus" class="hidden footer-label">Tab Moves Focus</span>
         </span>
       </summary>
       <div id="not-supported">
@@ -182,10 +182,12 @@
     </details>
 
     <!-- import the webpage's javascript file -->
-    <script src="/inline-scripts/base.js" inline></script>
+    <!-- <script src="/inline-scripts/base.js" inline></script> -->
     <script src="/inline-scripts/rum.js" inline></script>
-    <script src="/inline-scripts/menus.js" inline></script>
     <script src="/inline-scripts/app.js" inline></script>
+
+    <script src="/inline-scripts/menus.js" inline></script>
+
     <script src="/inline-scripts/text-area.js" inline></script>
     <script src="/inline-scripts/fs-helpers.js" inline></script>
     <script src="/inline-scripts/menu-file.js" inline></script>

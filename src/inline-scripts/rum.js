@@ -15,6 +15,8 @@
  */
 
 'use strict';
+
+/* eslint-disable no-redeclare */
 /* exported gaEvent, gaTiming, */
 
 /**
@@ -114,14 +116,20 @@ window.addEventListener('DOMContentLoaded', () => {
   if (window.ga) {
     window.ga('send', 'pageview', '/');
     // eslint-disable-next-line no-console
-    console.log('👀', 'pageview');
+    console.log('👀', 'pageview', '/');
   }
 });
 
+/**
+ * Log the app version.
+ */
 window.addEventListener('load', () => {
   gaEvent('App Version', '[[VERSION]]', null, null, true);
 });
 
+/**
+ * Log page visibility.
+ */
 document.addEventListener('visibilitychange', (e) => {
   const state = document.hidden === true ? 'hidden' : 'visible';
   gaEvent('Page Visibility', state, null, null, true);
