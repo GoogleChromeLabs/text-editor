@@ -16,7 +16,8 @@
 
 'use strict';
 
-/* globals getFileHandle, getNewFileHandle, readFile, writeFile */
+/* globals getFileHandle, getNewFileHandle, readFile, verifyPermission,
+           writeFile */
 
 // eslint-disable-next-line no-redeclare
 const app = {
@@ -63,19 +64,36 @@ app.newFile = () => {
 
 /**
  * Opens a file for reading.
+ *
+ * @param {FileSystemFileHandle} fileHandle File handle to read from.
  */
-app.openFile = async () => {
+app.openFile = async (fileHandle) => {
   if (!app.confirmDiscard()) {
     return;
   }
-  let file;
-  let fileHandle;
 
-  if (app.hasNativeFS) {
+  // If the Native File System API is not supported, use the legacy file apis.
+  if (!app.hasNativeFS) {
+    gaEvent('FileAction', 'Open', 'Legacy');
+    const file = await app.getFileLegacy();
+    if (file) {
+      app.readFile(file);
+    }
+    return;
+  }
+
+  // If a fileHandle is provided, verify we have permission to read/write it,
+  // otherwise, show the file open prompt and allow the user to select the file.
+  if (fileHandle) {
+    gaEvent('FileAction', 'OpenRecent', 'Native');
+    if (await verifyPermission(fileHandle, true) === false) {
+      console.error(`User did not grant permission to '${fileHandle.name}'`);
+      return;
+    }
+  } else {
+    gaEvent('FileAction', 'Open', 'Native');
     try {
-      gaEvent('FileAction', 'Open', 'Native');
       fileHandle = await getFileHandle();
-      file = await fileHandle.getFile();
     } catch (ex) {
       if (ex.name === 'AbortError') {
         return;
@@ -85,15 +103,22 @@ app.openFile = async () => {
       console.error(msg, ex);
       alert(msg);
     }
-  } else {
-    gaEvent('FileAction', 'Open', 'Legacy');
-    file = await app.getFileLegacy();
   }
 
-  if (!file) {
+  if (!fileHandle) {
     return;
   }
+  const file = await fileHandle.getFile();
+  app.readFile(file, fileHandle);
+};
 
+/**
+ * Read the file from disk.
+ *
+ *  @param {File} file File to read from.
+ *  @param {FileSystemFileHandle} fileHandle File handle to read from.
+ */
+app.readFile = async (file, fileHandle) => {
   try {
     app.setText(await readFile(file));
     app.setFile(fileHandle || file.name);
