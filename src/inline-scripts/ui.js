@@ -45,18 +45,19 @@
 
   /**
    * Updates the UI with the current file name.
-   * @param {FileHandle|string} file Filename to display in header.
+   * @param {FileHandle|string} fileHandle Filename to display in header.
    */
-  app.setFile = (file) => {
-    if (file && file.name) {
-      app.file.handle = file;
-      app.file.name = file.name;
-      document.title = `${file.name} - ${app.appName}`;
-      spanFileName.textContent = file.name;
+  app.setFile = (fileHandle) => {
+    if (fileHandle && fileHandle.name) {
+      app.file.handle = fileHandle;
+      app.file.name = fileHandle.name;
+      document.title = `${fileHandle.name} - ${app.appName}`;
+      spanFileName.textContent = fileHandle.name;
       spanAppName.classList.toggle('hidden', false);
+      app.addRecent(fileHandle);
     } else {
       app.file.handle = null;
-      app.file.name = file;
+      app.file.name = fileHandle;
       document.title = app.appName;
       spanFileName.textContent = app.appName;
       spanAppName.classList.toggle('hidden', true);

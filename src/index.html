@@ -65,8 +65,10 @@
     <link rel="stylesheet" href="/styles/standalone.css" inline>
     <link rel="stylesheet" media="print" href="/styles/print.css" inline>
 
-    <!-- Origin Trial Token (expires 2020-01-14) -->
-    <meta http-equiv="origin-trial" content="Aoc1u/asxes2vyK278+/djdkW9SSUmUxj6xiNROZQB9H760sTzxFxjQoIcUCzikfWRBI+LSnImysQrcoi2ruLgYAAABkeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZWNocm9tZWxhYnMuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJOYXRpdmVGaWxlU3lzdGVtIiwiZXhwaXJ5IjoxNTc5MDI5NjU3fQ==">
+    <!-- Origin Trial Token NFS API v1 (expires 2020-05-12) -->
+    <meta http-equiv="origin-trial" content="ApP5hRHS+dIxGdu/1psSHsErxROE+aVFGqdUwBgrcsGuwWDpPo3iqanpH3EdEie7YHhBN0LL1sdkT89waJPbzwsAAABkeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZWNocm9tZWxhYnMuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJOYXRpdmVGaWxlU3lzdGVtIiwiZXhwaXJ5IjoxNTg5MzI3OTk5fQ==">
+    <!-- Origin Trial Token NFS API v2 (expires 2020-05-25) -->
+    <meta http-equiv="origin-trial" content="AouXz9/sqzYGRIFkw8KK0QXp0HOo99+Pg8NAr/4pRA1pAlaTeQ6BngqqkBUzfjvxzPcRf15pmieR4RDhJB9bKwAAAABleyJvcmlnaW4iOiJodHRwczovL2dvb2dsZWNocm9tZWxhYnMuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJOYXRpdmVGaWxlU3lzdGVtMiIsImV4cGlyeSI6MTU5MDQxNzc1NX0=">
   </head>
   <body class="wordwrap">
 
@@ -96,6 +98,13 @@
             <button id="butClose" type="button" role="menuitem">
               Close <kbd>^W</kbd>
             </button>
+          </div>
+        </div>
+        <div id="menuRecent" class="menuContainer">
+          <button id="butRecent" class="menuTop" aria-label="Recent" aria-haspopup="true" aria-expanded="false">
+            <span class="kbdShortcut">R</span>ecent
+          </button>
+          <div id="recentContainer" role="menu" class="menuItemContainer hidden">
           </div>
         </div>
         <div id="menuEdit" class="menuContainer">
@@ -172,7 +181,7 @@
         it easy to edit text files on your local file system. It shows how
         to easily use the new HTML5 Native File System APIs. To learn more
         about the Native File System APIs and how this demo was built, check out
-        <a href="https://developers.google.com/web/updates/2018/11/writable-files" target="_blank">
+        <a href="https://web.dev/native-file-system/" target="_blank">
         The native file system APIs</a> article on Web Fundamentals, or see the
         <a href="https://github.com/GoogleChromeLabs/text-editor/" target="_blank">
         source code on GitHub</a>.
@@ -185,6 +194,8 @@
 
     <!-- import the webpage's javascript file -->
     <!-- <script src="/inline-scripts/base.js" inline></script> -->
+    <script src="/inline-scripts/idb-keyval-iife.js" inline></script>
+
     <script src="/inline-scripts/rum.js" inline></script>
     <script src="/inline-scripts/app.js" inline></script>
 
@@ -195,6 +206,7 @@
     <script src="/inline-scripts/menu-file.js" inline></script>
     <script src="/inline-scripts/menu-edit.js" inline></script>
     <script src="/inline-scripts/menu-view.js" inline></script>
+    <script src="/inline-scripts/menu-recent.js" inline></script>
     <script src="/inline-scripts/ui.js" inline></script>
     <script src="/inline-scripts/keyboard-events.js" inline></script>
     <script src="/inline-scripts/load-sw.js" inline></script>

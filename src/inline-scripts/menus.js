@@ -115,7 +115,47 @@ myMenus.show = (menuContainer) => {
   const panel = menuContainer.querySelector('.menuItemContainer');
   panel.classList.toggle('hidden', false);
   const firstButton = panel.querySelector('button');
+  if (!firstButton) {
+    myMenus.hideAll();
+    app.setFocus();
+    return;
+  }
   firstButton.focus();
+};
+
+/**
+ * Creates a new menu item button.
+ *
+ * @param {string} label Label for button
+ * @return {Button} Returns an HTML button.
+ */
+myMenus.createButton = (label) => {
+  const butt = document.createElement('button');
+  butt.innerText = label;
+  butt.setAttribute('type', 'button');
+  butt.setAttribute('role', 'menuitem');
+  return butt;
+};
+
+/**
+ * Adds an element to the menu.
+ *
+ * @param {Element} menuContainer Container element with the drop down menu.
+ * @param {Element} elem Element to add to the menu container.
+ */
+myMenus.addElement = (menuContainer, elem) => {
+  const container = menuContainer.querySelector('.menuItemContainer');
+  container.appendChild(elem);
+};
+
+/**
+ * Removes all items from the menu.
+ *
+ * @param {Element} menuContainer Container element with the drop down menu.
+ */
+myMenus.clearMenu = (menuContainer) => {
+  const container = menuContainer.querySelector('.menuItemContainer');
+  container.innerHTML = '';
 };
 
 /**
@@ -133,7 +173,6 @@ myMenus._toggle = (button) => {
     myMenus.show(parent);
   }
 };
-
 
 /* Show shortcuts on menu items when ALT key is pressed, non-Mac only */
 if (!app.isMac) {
