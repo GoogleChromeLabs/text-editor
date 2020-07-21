@@ -25,10 +25,11 @@
  * @return {!Promise<FileSystemFileHandle>} Handle to the existing file.
  */
 function getFileHandle() {
-  if (window.showOpenFilePicker) {
-    const [handle] = window.showOpenFilePicker();
+  let handle;
+  if ('showOpenFilePicker' in window) {
+    handle = window.showOpenFilePicker().then(handles => handles[0]);
   } else {
-    const handle = window.chooseFileSystemEntries();
+    handle = window.chooseFileSystemEntries();
   }
   return handle;
 }
@@ -39,14 +40,15 @@ function getFileHandle() {
  * @return {!Promise<FileSystemFileHandle>} Handle to the new file.
  */
 function getNewFileHandle() {
-  if (window.showSaveFilePicker) {
+  let handle;
+  if ('showSaveFilePicker' in window) {
     const opts = {
       types: [{
         description: 'Text file',
         accept: {'text/plain': ['txt']},
       }],
     };
-    const handle = window.showSaveFilePicker(opts);
+    handle = window.showSaveFilePicker(opts);
   } else {
     const opts = {
       type: 'save-file',
@@ -56,7 +58,7 @@ function getNewFileHandle() {
         mimeTypes: ['text/plain'],
       }],
     };
-    const handle = window.chooseFileSystemEntries(opts);
+    handle = window.chooseFileSystemEntries(opts);
   }
   return handle;
 }
