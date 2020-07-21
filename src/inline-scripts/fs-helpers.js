@@ -25,7 +25,11 @@
  * @return {!Promise<FileSystemFileHandle>} Handle to the existing file.
  */
 function getFileHandle() {
-  const handle = window.chooseFileSystemEntries();
+  if (window.showOpenFilePicker) {
+    const [handle] = window.showOpenFilePicker();
+  } else {
+    const handle = window.chooseFileSystemEntries();
+  }
   return handle;
 }
 
@@ -35,15 +39,25 @@ function getFileHandle() {
  * @return {!Promise<FileSystemFileHandle>} Handle to the new file.
  */
 function getNewFileHandle() {
-  const opts = {
-    type: 'save-file',
-    accepts: [{
-      description: 'Text file',
-      extensions: ['txt'],
-      mimeTypes: ['text/plain'],
-    }],
-  };
-  const handle = window.chooseFileSystemEntries(opts);
+  if (window.showSaveFilePicker) {
+    const opts = {
+      types: [{
+        description: 'Text file',
+        accept: {'text/plain': ['txt']},
+      }],
+    };
+    const handle = window.showSaveFilePicker(opts);
+  } else {
+    const opts = {
+      type: 'save-file',
+      accepts: [{
+        description: 'Text file',
+        extensions: ['txt'],
+        mimeTypes: ['text/plain'],
+      }],
+    };
+    const handle = window.chooseFileSystemEntries(opts);
+  }
   return handle;
 }
 
@@ -118,6 +132,7 @@ async function verifyPermission(fileHandle, withWrite) {
   const opts = {};
   if (withWrite) {
     opts.writable = true;
+    opts.mode = 'readwrite';
   }
   // Check if we already have permission, if so, return true.
   if (await fileHandle.queryPermission(opts) === 'granted') {
