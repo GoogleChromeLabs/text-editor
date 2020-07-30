@@ -74,6 +74,7 @@ myMenus.addKeyboardShortcut = (button) => {
   }
   window.addEventListener('keydown', (e) => {
     if (e.altKey === true && e.key === key) {
+      e.preventDefault();
       button.click();
     }
   });
