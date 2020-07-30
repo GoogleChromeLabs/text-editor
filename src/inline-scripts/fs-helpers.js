@@ -25,8 +25,12 @@
  * @return {!Promise<FileSystemFileHandle>} Handle to the existing file.
  */
 function getFileHandle() {
-  const handle = window.chooseFileSystemEntries();
-  return handle;
+  // For Chrome 86 and later...
+  if ('showOpenFilePicker' in window) {
+    return window.showOpenFilePicker().then((handles) => handles[0]);
+  }
+  // For Chrome 85 and earlier...
+  return window.chooseFileSystemEntries();
 }
 
 /**
@@ -35,6 +39,17 @@ function getFileHandle() {
  * @return {!Promise<FileSystemFileHandle>} Handle to the new file.
  */
 function getNewFileHandle() {
+  // For Chrome 86 and later...
+  if ('showSaveFilePicker' in window) {
+    const opts = {
+      types: [{
+        description: 'Text file',
+        accept: {'text/plain': ['txt']},
+      }],
+    };
+    return window.showSaveFilePicker(opts);
+  }
+  // For Chrome 85 and earlier...
   const opts = {
     type: 'save-file',
     accepts: [{
@@ -43,8 +58,7 @@ function getNewFileHandle() {
       mimeTypes: ['text/plain'],
     }],
   };
-  const handle = window.chooseFileSystemEntries(opts);
-  return handle;
+  return window.chooseFileSystemEntries(opts);
 }
 
 /**
@@ -118,6 +132,8 @@ async function verifyPermission(fileHandle, withWrite) {
   const opts = {};
   if (withWrite) {
     opts.writable = true;
+    // For Chrome 86 and later...
+    opts.mode = 'readwrite';
   }
   // Check if we already have permission, if so, return true.
   if (await fileHandle.queryPermission(opts) === 'granted') {
