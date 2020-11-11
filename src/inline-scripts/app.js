@@ -32,6 +32,7 @@ const app = {
     fontSize: 14,
     monoSpace: false,
     wordWrap: true,
+    encoding: "UTF-8",
   },
   hasNativeFS: 'chooseFileSystemEntries' in window ||
                'showOpenFilePicker' in window,
@@ -121,7 +122,12 @@ app.openFile = async (fileHandle) => {
  */
 app.readFile = async (file, fileHandle) => {
   try {
-    app.setText(await readFile(file));
+    // use encoding, unless it's unavaliable
+    const text = "encodeFile" in app
+      ? app.encodeFile(file, app.options.encoding)
+      : readFile(file);
+
+    app.setText(await text);
     app.setFile(fileHandle || file.name);
     app.setModified(false);
     app.setFocus(true);
