@@ -1,114 +1,121 @@
 /**
  * Copyright 2019 Google LLC
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
+ * distributed under the License is distributed on an 'AS IS' BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
-"use strict";
+'use strict';
 
-if ("arrayBuffer" in Blob.prototype) {
-	const menuEncodings = document.getElementById("menuEncodings");
+/**
+ * Allows the user to choose what encoding to read files as
+ * 
+ * TODO: make sure files are written in the proper encoding too!
+*/
 
-	myMenus.setup(menuEncodings);
+if ('arrayBuffer' in Blob.prototype) {
+  const menuEncodings = document.getElementById('menuEncodings');
 
-	menuEncodings.querySelector("#butEncodings").removeAttribute("disabled");
+  myMenus.setup(menuEncodings);
 
-	const supportedEncodings = new Map;
+  // if Blob#arrayBuffer exists, then they can choose an encoding
+  menuEncodings.querySelector('#butEncodings').removeAttribute('disabled');
 
-	const buttonContainer = menuEncodings.querySelector(".menuItemContainer");
+  const { supportedEncodings } = app;
 
-	const encodingButtons = buttonContainer.children;
+  const buttonContainer = menuEncodings.querySelector('.menuItemContainer');
 
-	new Set(encodingButtons).forEach(
-		async button => {
-			const encoding = button.textContent;
+  const encodingButtons = buttonContainer.children;
 
-			supportedEncodings.set( encoding, new TextDecoder(encoding) );
+  // Set for iteration
+  new Set(encodingButtons).forEach(
+    // async for errors
+    async button => {
+      const encoding = button.textContent;
 
-			button.removeAttribute("disabled");
-		}
-	);
+      supportedEncodings.set(encoding, new TextDecoder(encoding));
 
-	app.encodeFile = async (file, encoding) => {
+      // if creating the TextDecoder threw, then this line won't be reached, and the client won't be allowed to select it
+      button.removeAttribute('disabled');
+    }
+  );
 
-		if ( !supportedEncodings.has( encoding ) ) {
-			// safey assertion; impossible to reach without tampering with the DOM at runtime, editing the file, or forking the source
-			alert("An error occurred when re-encoding the file");
+  app.encodeFile = async (file = app.file.handle.getFile(), encoding = app.options.encoding) => {
+    // await default params aren't allowed
+    await file;
 
-			throw new Error( "unreachable" );
-		}
+    if (!supportedEncodings.has(encoding)) {
+      // safey assertion; impossible to reach without tampering with the DOM at runtime, editing the file, or forking the source
+      alert('An error occurred when re-encoding the file');
 
-		const decoder = supportedEncodings.get( encoding );
+      throw new Error('unreachable');
+    }
 
-		const buffer = await file.arrayBuffer();
+    const decoder = supportedEncodings.get(encoding);
 
-		return decoder.decode( buffer );
-	};
+    const buffer = await file.arrayBuffer();
 
-	// HTMLButtonElement
-	// starts as UTF-8
-	let [ lastSelectedEncoding ] = encodingButtons;
+    return decoder.decode(buffer);
+  };
 
-	// event delegation
-	buttonContainer.addEventListener(
-		"click",
-		async ({ isTrusted, target }) => {
-			if ( isTrusted && target !== lastSelectedEncoding ) {
-				const encoding = app.options.encoding = target.textContent;
+  // HTMLButtonElement
+  // starts as UTF-8
+  let [lastSelectedEncoding] = encodingButtons;
 
-				idbKeyval.set("encoding", encoding);
+  // event delegation
+  buttonContainer.addEventListener(
+    'click',
+    async ({ isTrusted, target }) => {
+      if (isTrusted && target !== lastSelectedEncoding) {
+        const encoding = app.options.encoding = target.textContent;
 
-				// set selected classes and aria attributes
+        idbKeyval.set('encoding', encoding);
 
-				lastSelectedEncoding.setAttribute("aria-checked", "false");
+        // set selected classes and aria attributes
 
-				{
-					// reverses current aria-checked
-					const isNotChecked = target.getAttribute("aria-checked") !== "true";
+        lastSelectedEncoding.setAttribute('aria-checked', 'false');
 
-					target.setAttribute("aria-checked", isNotChecked.toString());
-				}
+        {
+          // reverses current aria-checked
+          const isNotChecked = target.getAttribute('aria-checked') !== 'true';
 
-				lastSelectedEncoding = target;
+          target.setAttribute('aria-checked', isNotChecked.toString());
+        }
 
-				const file = await app.file.handle.getFile();
+        lastSelectedEncoding = target;
 
-				app.setText(await app.encodeFile(file, encoding));
-			}
-		}, {
-			passive: true
-		}
-	);
+        app.setText(await app.encodeFile());
+      }
+    }, {
+      passive: true
+    }
+  );
 
-	// should this be exported? Probably doesn't need to be
-	app.supportedEncodings = supportedEncodings;
+  // gets last selected encoding
+  async function init() {
+    const encoding = app.options.encoding = await idbKeyval.get('encoding');
+    // set button
 
-	// gets last selected encoding
-	async function init() {
-		const encoding = app.options.encoding = await idbKeyval.get("encoding");
-		// set button
+    lastSelectedEncoding.setAttribute('aria-checked', 'false');
 
-		lastSelectedEncoding.setAttribute("aria-checked", "false");
+    // is there a more efficient way to do this?
+    lastSelectedEncoding = Array.from(encodingButtons).find(
+      (button) => button.innerText === encoding
+    );
 
-		// is there a more efficient way to do this?
-		lastSelectedEncoding = Array.from(encodingButtons).find(
-			button => button.innerText === encoding
-		);
+    lastSelectedEncoding.setAttribute('aria-checked', 'true');
+  }
 
-		lastSelectedEncoding.setAttribute("aria-checked", "true");
-	}
-
-	init();
+  init();
 } else {
-	console.warn("Encoding is not configurable.");
+  console.warn('Encoding is not configurable.');
 }
