@@ -16,194 +16,107 @@
 
 'use strict';
 
-/* globals getFileHandle, getNewFileHandle, readFile, verifyPermission,
-           writeFile */
+if ('arrayBuffer' in Blob.prototype) {
+    const menuEncodings = document.getElementById('menuEncodings');
 
-// eslint-disable-next-line no-redeclare
-const app = {
-  appName: 'Text Editor',
-  file: {
-    handle: null,
-    name: null,
-    isModified: false,
-  },
-  options: {
-    captureTabs: true,
-    fontSize: 14,
-    monoSpace: false,
-    wordWrap: true,
-    encoding: 'UTF-8',
-  },
-  hasNativeFS: 'chooseFileSystemEntries' in window ||
-               'showOpenFilePicker' in window,
-  isMac: navigator.userAgent.includes('Mac OS X'),
-};
+    myMenus.setup(menuEncodings);
 
-// Verify the APIs we need are supported, show a polite warning if not.
-if (app.hasNativeFS) {
-  document.getElementById('not-supported').classList.add('hidden');
-  gaEvent('File System APIs', 'Native');
+    // if .arrayBuffer exists, then they can choose an encoding
+    menuEncodings.querySelector('#butEncodings').removeAttribute('disabled');
+
+    const supportedEncodings = new Map;
+
+    const buttonContainer = menuEncodings.querySelector('.menuItemContainer');
+
+    const encodingButtons = buttonContainer.children;
+
+    // Set for iteration
+    new Set(encodingButtons).forEach(
+        // async for errors
+        async button => {
+            const encoding = button.textContent;
+
+            supportedEncodings.set(encoding, new TextDecoder(encoding));
+
+            // if creating the TextDecoder threw, then this line won't be reached, and tge client won't be allowed to choose it
+            button.removeAttribute('disabled');
+        }
+    );
+
+    app.encodeFile = async (file, encoding = app.options.encoding) => {
+        // await default params aren't allowed
+        if (undefined === file) {
+            file = await app.file.handle.getFile();
+        }
+
+        if (!supportedEncodings.has(encoding)) {
+            // safey assertion; impossible to reach without tampering with the DOM at runtime, editing the file, or forking the source
+            alert('An error occurred when re-encoding the file');
+
+            throw new Error('unreachable');
+        }
+
+        const decoder = supportedEncodings.get(encoding);
+
+        const buffer = await file.arrayBuffer();
+
+        return decoder.decode(buffer);
+    };
+
+    // HTMLButtonElement
+    // starts as UTF-8
+    let [lastSelectedEncoding] = encodingButtons;
+
+    // event delegation
+    buttonContainer.addEventListener(
+        'click',
+        async ({ isTrusted, target }) => {
+            if (isTrusted === true && target !== lastSelectedEncoding) {
+                const encoding = app.options.encoding = target.textContent;
+
+                idbKeyval.set('encoding', encoding);
+
+                // set selected classes and aria attributes
+
+                lastSelectedEncoding.setAttribute('aria-checked', 'false');
+
+                {
+                    // reverses current aria-checked
+                    const isNotChecked = target.getAttribute('aria-checked') === 'false';
+
+                    target.setAttribute('aria-checked', isNotChecked.toString());
+                }
+
+                lastSelectedEncoding = target;
+
+                const file = await app.file.handle.getFile();
+
+                app.setText(await app.encodeFile(file, encoding));
+            }
+        }, {
+            passive: true
+        }
+    );
+
+    // should this be exported?
+    app.supportedEncodings = supportedEncodings;
+
+    // gets last selected encoding
+    async function init() {
+        const encoding = app.options.encoding = await idbKeyval.get('encoding');
+        // set button
+
+        lastSelectedEncoding.setAttribute('aria-checked', 'false');
+
+        // is there a more efficient way to do this?
+        lastSelectedEncoding = Array.from(encodingButtons).find(
+            button => button.innerText === encoding
+        );
+
+        lastSelectedEncoding.setAttribute('aria-checked', 'true');
+    }
+
+    init();
 } else {
-  document.getElementById('lblLegacyFS').classList.toggle('hidden', false);
-  document.getElementById('butSave').classList.toggle('hidden', true);
-  gaEvent('File System APIs', 'Legacy');
+    console.warn('Encoding is not configurable.');
 }
-
-/**
- * Creates an empty notepad with no details in it.
- */
-app.newFile = () => {
-  if (!app.confirmDiscard()) {
-    return;
-  }
-  app.setText();
-  app.setFile();
-  app.setModified(false);
-  app.setFocus(true);
-  gaEvent('FileAction', 'New');
-};
-
-
-/**
- * Opens a file for reading.
- *
- * @param {FileSystemFileHandle} fileHandle File handle to read from.
- */
-app.openFile = async (fileHandle) => {
-  if (!app.confirmDiscard()) {
-    return;
-  }
-
-  // If the Native File System API is not supported, use the legacy file apis.
-  if (!app.hasNativeFS) {
-    gaEvent('FileAction', 'Open', 'Legacy');
-    const file = await app.getFileLegacy();
-    if (file) {
-      app.readFile(file);
-    }
-    return;
-  }
-
-  // If a fileHandle is provided, verify we have permission to read/write it,
-  // otherwise, show the file open prompt and allow the user to select the file.
-  if (fileHandle) {
-    gaEvent('FileAction', 'OpenRecent', 'Native');
-    if (await verifyPermission(fileHandle, true) === false) {
-      console.error(`User did not grant permission to '${fileHandle.name}'`);
-      return;
-    }
-  } else {
-    gaEvent('FileAction', 'Open', 'Native');
-    try {
-      fileHandle = await getFileHandle();
-    } catch (ex) {
-      if (ex.name === 'AbortError') {
-        return;
-      }
-      gaEvent('Error', 'FileOpen', ex.name);
-      const msg = 'An error occured trying to open the file.';
-      console.error(msg, ex);
-      alert(msg);
-    }
-  }
-
-  if (!fileHandle) {
-    return;
-  }
-  const file = await fileHandle.getFile();
-  app.readFile(file, fileHandle);
-};
-
-/**
- * Read the file from disk.
- *
- *  @param {File} file File to read from.
- *  @param {FileSystemFileHandle} fileHandle File handle to read from.
- */
-app.readFile = async (file, fileHandle) => {
-  try {
-    const text = 'encodeFile' in app
-      ? app.encodeFile(file, app.options.encoding)
-      : readFile(file);
-
-    app.setText(await text);
-    app.setFile(fileHandle || file.name);
-    app.setModified(false);
-    app.setFocus(true);
-  } catch (ex) {
-    gaEvent('Error', 'FileRead', ex.name);
-    const msg = `An error occured reading ${app.fileName}`;
-    console.error(msg, ex);
-    alert(msg);
-  }
-};
-
-/**
- * Saves a file to disk.
- */
-app.saveFile = async () => {
-  try {
-    if (!app.file.handle) {
-      return await app.saveFileAs();
-    }
-    gaEvent('FileAction', 'Save');
-    await writeFile(app.file.handle, app.getText());
-    app.setModified(false);
-  } catch (ex) {
-    gaEvent('Error', 'FileSave', ex.name);
-    const msg = 'Unable to save file';
-    console.error(msg, ex);
-    alert(msg);
-  }
-  app.setFocus();
-};
-
-/**
- * Saves a new file to disk.
- */
-app.saveFileAs = async () => {
-  if (!app.hasNativeFS) {
-    gaEvent('FileAction', 'Save As', 'Legacy');
-    app.saveAsLegacy(app.file.name, app.getText());
-    app.setFocus();
-    return;
-  }
-  gaEvent('FileAction', 'Save As', 'Native');
-  let fileHandle;
-  try {
-    fileHandle = await getNewFileHandle();
-  } catch (ex) {
-    if (ex.name === 'AbortError') {
-      return;
-    }
-    gaEvent('Error', 'FileSaveAs1', ex.name);
-    const msg = 'An error occured trying to open the file.';
-    console.error(msg, ex);
-    alert(msg);
-    return;
-  }
-  try {
-    await writeFile(fileHandle, app.getText());
-    app.setFile(fileHandle);
-    app.setModified(false);
-  } catch (ex) {
-    gaEvent('Error', 'FileSaveAs2', ex.name);
-    const msg = 'Unable to save file.';
-    console.error(msg, ex);
-    alert(msg);
-    gaEvent('Error', 'Unable to write file', 'Native');
-    return;
-  }
-  app.setFocus();
-};
-
-/**
- * Attempts to close the window
- */
-app.quitApp = () => {
-  if (!app.confirmDiscard()) {
-    return;
-  }
-  gaEvent('FileAction', 'Quit');
-  window.close();
-};
