@@ -16,28 +16,14 @@
 
 "use strict";
 
-/*
-<div id="menuEncodings" class="menuContainer">
-	<button id="butEncodings" class="menuTop" aria-label="Encodings" aria-haspopup="true" aria-expanded="false">
-		<span class="kbdShortcut">E</span>ncoding
-	</button>
-	<div role="menu" class="menuItemContainer hidden">
-		<button disabled type="button" role="menuitem">UTF-8</button>
-		...
-		<button disabled type="button" role="menuitem">x-user-defined</button>
-	</div>
-</div>
-*/
-
-{
+if ("arrayBuffer" in Blob.prototype) {
 	const menuEncodings = document.getElementById("menuEncodings");
 
 	myMenus.setup(menuEncodings);
 
-	const supportedEncodings = new Map;
+	menuEncodings.querySelector("#butEncodings").removeAttribute("disabled");
 
-	// idbKeyval.get("encoding");
-	// idbKeyval.set("encoding", app.options.encoding);
+	const supportedEncodings = new Map;
 
 	const buttonContainer = menuEncodings.querySelector(".menuItemContainer");
 
@@ -53,6 +39,22 @@
 		}
 	);
 
+	app.encodeFile = async (file, encoding) => {
+
+		if ( !supportedEncodings.has( encoding ) ) {
+			// safey assertion; impossible to reach without tampering with the DOM at runtime, editing the file, or forking the source
+			alert("An error occurred when re-encoding the file");
+
+			throw new Error( "unreachable" );
+		}
+
+		const decoder = supportedEncodings.get( encoding );
+
+		const buffer = await file.arrayBuffer();
+
+		return decoder.decode( buffer );
+	};
+
 	// HTMLButtonElement
 	// starts as UTF-8
 	let [ lastSelectedEncoding ] = encodingButtons;
@@ -60,37 +62,53 @@
 	// event delegation
 	buttonContainer.addEventListener(
 		"click",
-		({ isTrusted, target }) => {
+		async ({ isTrusted, target }) => {
 			if ( isTrusted && target !== lastSelectedEncoding ) {
 				const encoding = app.options.encoding = target.textContent;
+
+				idbKeyval.set("encoding", encoding);
 
 				// set selected classes and aria attributes
 
 				lastSelectedEncoding.setAttribute("aria-checked", "false");
 
-				if ( target.getAttribute("aria-checked") === "true" ) {
-					target.setAttribute("aria-checked", "false"); 
-				} else {
-					target.setAttribute("aria-checked", "true"); 
+				{
+					// reverses current aria-checked
+					const isNotChecked = target.getAttribute("aria-checked") !== "true";
+
+					target.setAttribute("aria-checked", isNotChecked.toString());
 				}
 
 				lastSelectedEncoding = target;
 
-				if ( !supportedEncodings.has( encoding ) ) {
-					// safey assertion; impossible to reach without tampering with the DOM at runtime, copying the file, or forking the source 
-					throw new Error( "unreachable" );
-				}
+				const file = await app.file.handle.getFile();
 
-				const decoder = supportedEncodings.get( encoding );
-
-				const data = new TextEncoder().encode( app.getText() );
-
-				app.setText( decoder.decode( data ) );
+				app.setText(await app.encodeFile(file, encoding));
 			}
 		}, {
 			passive: true
 		}
 	);
 
+	// should this be exported? Probably doesn't need to be
 	app.supportedEncodings = supportedEncodings;
+
+	// gets last selected encoding
+	async function init() {
+		const encoding = app.options.encoding = await idbKeyval.get("encoding");
+		// set button
+
+		lastSelectedEncoding.setAttribute("aria-checked", "false");
+
+		// is there a more efficient way to do this?
+		lastSelectedEncoding = Array.from(encodingButtons).find(
+			button => button.innerText === encoding
+		);
+
+		lastSelectedEncoding.setAttribute("aria-checked", "true");
+	}
+
+	init();
+} else {
+	console.warn("Encoding is not configurable.");
 }
