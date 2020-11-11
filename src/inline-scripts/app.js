@@ -155,8 +155,6 @@ app.saveFile = async () => {
     gaEvent('Error', 'FileSave', ex.name);
     const msg = 'Unable to save file';
     console.error(msg, ex);
-    alert(ex.message);
-    alert(ex.name);
     alert(msg);
   }
   app.setFocus();
