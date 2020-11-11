@@ -49,12 +49,15 @@ if ('arrayBuffer' in Blob.prototype) {
     }
   );
 
-  app.encodeFile = async (file = app.file.handle.getFile(), encoding = app.options.encoding) => {
+  app.encodeFile = async (
+    file = app.file.handle.getFile(),
+    encoding = app.options.encoding
+  ) => {
     // await default params aren't allowed
-    await file;
+    file = await file;
 
     if (!supportedEncodings.has(encoding)) {
-      // safey assertion; impossible to reach without tampering with the DOM at runtime, editing the file, or forking the source
+      // safey assertion; impossible to reach without tampering with the DOM at runtime, using the dev tools, editing the file, or forking the source
       alert('An error occurred when re-encoding the file');
 
       throw new Error('unreachable');
@@ -75,7 +78,7 @@ if ('arrayBuffer' in Blob.prototype) {
   buttonContainer.addEventListener(
     'click',
     async ({ isTrusted, target }) => {
-      if (isTrusted && target !== lastSelectedEncoding) {
+      if (isTrusted === true && target !== lastSelectedEncoding) {
         const encoding = app.options.encoding = target.textContent;
 
         idbKeyval.set('encoding', encoding);
@@ -86,7 +89,7 @@ if ('arrayBuffer' in Blob.prototype) {
 
         {
           // reverses current aria-checked
-          const isNotChecked = target.getAttribute('aria-checked') !== 'true';
+          const isNotChecked = target.getAttribute('aria-checked') === 'false';
 
           target.setAttribute('aria-checked', isNotChecked.toString());
         }
