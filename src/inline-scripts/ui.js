@@ -69,7 +69,7 @@
    * @param {boolean} val True if the file has been modified.
    */
   app.setModified = (val) => {
-    if (!app.hasNativeFS) {
+    if (!app.hasFSAccess) {
       return;
     }
     app.file.isModified = val;
