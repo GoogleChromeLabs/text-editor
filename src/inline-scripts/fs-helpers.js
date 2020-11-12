@@ -44,7 +44,7 @@ function getNewFileHandle() {
     const opts = {
       types: [{
         description: 'Text file',
-        accept: {'text/plain': ['txt']},
+        accept: {'text/plain': ['.txt']},
       }],
     };
     return window.showSaveFilePicker(opts);
