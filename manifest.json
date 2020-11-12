@@ -1,7 +1,7 @@
 {
   "name": "Text Editor",
   "short_name": "TextEdit",
-  "description": "Text Editor - Demo for the HTML5 Native File System.",
+  "description": "Text Editor - Demo for the HTML5 File System Access API.",
   "start_url": "./",
   "display": "standalone",
   "theme_color": "#1a237e",
