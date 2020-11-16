@@ -34,15 +34,15 @@ const app = {
     wordWrap: true,
     encoding: 'UTF-8',
   },
-  hasNativeFS: 'chooseFileSystemEntries' in window ||
+  hasFSAccess: 'chooseFileSystemEntries' in window ||
                'showOpenFilePicker' in window,
   isMac: navigator.userAgent.includes('Mac OS X'),
 };
 
 // Verify the APIs we need are supported, show a polite warning if not.
-if (app.hasNativeFS) {
+if (app.hasFSAccess) {
   document.getElementById('not-supported').classList.add('hidden');
-  gaEvent('File System APIs', 'Native');
+  gaEvent('File System APIs', 'FSAccess');
 } else {
   document.getElementById('lblLegacyFS').classList.toggle('hidden', false);
   document.getElementById('butSave').classList.toggle('hidden', true);
@@ -73,8 +73,8 @@ app.openFile = async (fileHandle) => {
     return;
   }
 
-  // If the Native File System API is not supported, use the legacy file apis.
-  if (!app.hasNativeFS) {
+  // If the File System Access API is not supported, use the legacy file apis.
+  if (!app.hasFSAccess) {
     gaEvent('FileAction', 'Open', 'Legacy');
     const file = await app.getFileLegacy();
     if (file) {
@@ -86,13 +86,13 @@ app.openFile = async (fileHandle) => {
   // If a fileHandle is provided, verify we have permission to read/write it,
   // otherwise, show the file open prompt and allow the user to select the file.
   if (fileHandle) {
-    gaEvent('FileAction', 'OpenRecent', 'Native');
+    gaEvent('FileAction', 'OpenRecent', 'FSAccess');
     if (await verifyPermission(fileHandle, true) === false) {
       console.error(`User did not grant permission to '${fileHandle.name}'`);
       return;
     }
   } else {
-    gaEvent('FileAction', 'Open', 'Native');
+    gaEvent('FileAction', 'Open', 'FSAccess');
     try {
       fileHandle = await getFileHandle();
     } catch (ex) {
@@ -164,14 +164,14 @@ app.saveFile = async () => {
  * Saves a new file to disk.
  */
 app.saveFileAs = async () => {
-  if (!app.hasNativeFS) {
+  if (!app.hasFSAccess) {
     gaEvent('FileAction', 'Save As', 'Legacy');
     // if they don't have Blob#text, then they don't have Blob#arrayBuffer either
     app.saveAsLegacy(app.file.name, app.getText());
     app.setFocus();
     return;
   }
-  gaEvent('FileAction', 'Save As', 'Native');
+  gaEvent('FileAction', 'Save As', 'FSAccess');
   let fileHandle;
   try {
     fileHandle = await getNewFileHandle();
@@ -197,7 +197,7 @@ app.saveFileAs = async () => {
     const msg = 'Unable to save file.';
     console.error(msg, ex);
     alert(msg);
-    gaEvent('Error', 'Unable to write file', 'Native');
+    gaEvent('Error', 'Unable to write file', 'FSAccess');
     return;
   }
   app.setFocus();

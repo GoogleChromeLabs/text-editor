@@ -9,4 +9,4 @@ Twitter: @petele
 
 /* TECHNOLOGY COLOPHON */
 
-  HTML5, CSS3, Native File System APIs
+  HTML5, CSS3, File System Access APIs
