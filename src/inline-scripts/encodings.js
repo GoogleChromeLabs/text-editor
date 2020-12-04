@@ -44,21 +44,27 @@ if ('arrayBuffer' in Blob.prototype) {
 
       supportedEncodings.set(encoding, new TextDecoder(encoding));
 
-      // if creating the TextDecoder threw, then this line won't be reached, and the client won't be allowed to select it
+      // if creating the TextDecoder threw,
+      // then this line won't be reached,
+      // and the client won't be allowed to select it
       button.removeAttribute('disabled');
     }
   );
 
   app.encodeFile = async (
-    file = app.file.handle.getFile(),
+    file_promise = app.file.handle.getFile(),
     encoding = app.options.encoding
   ) => {
     // await default params aren't allowed
-    file = await file;
+    const file = await file_promise;
 
     if (!supportedEncodings.has(encoding)) {
-      // safey assertion; impossible to reach without tampering with the DOM at runtime, using the dev tools, editing the file, or forking the source
-      alert('An error occurred when re-encoding the file');
+      // safey assertion;
+      // impossible to reach without tampering with the DOM at runtime,
+      // using dev tools,
+      // editing the file,
+      // or forking the source
+      alert('An error occurred when encoding or decoding a file');
 
       throw new Error('unreachable');
     }
@@ -74,14 +80,17 @@ if ('arrayBuffer' in Blob.prototype) {
   // starts as UTF-8
   let [lastSelectedEncoding] = encodingButtons;
 
-  // event delegation
+  // event delegation across all encoding buttons
   buttonContainer.addEventListener(
     'click',
     async ({ isTrusted, target }) => {
+      // if they select the currently selected button: nop
       if (isTrusted === true && target !== lastSelectedEncoding) {
-        const encoding = app.options.encoding = target.textContent;
+        {
+          const encoding = app.options.encoding = target.textContent;
 
-        idbKeyval.set('encoding', encoding);
+          idbKeyval.set('encoding', encoding);
+        }
 
         // set selected classes and aria attributes
 
@@ -103,8 +112,8 @@ if ('arrayBuffer' in Blob.prototype) {
     }
   );
 
-  // gets last selected encoding
-  async function init() {
+  // gets last selected encoding; initializes `lastSelectedButton`
+  (async () => {
     const encoding = app.options.encoding = await idbKeyval.get('encoding');
     // set button
 
@@ -116,9 +125,8 @@ if ('arrayBuffer' in Blob.prototype) {
     );
 
     lastSelectedEncoding.setAttribute('aria-checked', 'true');
-  }
+  })();
 
-  init();
 } else {
   console.warn('Encoding is not configurable.');
 }
