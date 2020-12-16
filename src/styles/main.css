@@ -125,6 +125,10 @@ body.altKey .kbdShortcut {
   min-width: 180px;
   position: absolute;
   z-index: 1;
+
+  max-height: 40vh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .menuContainer .menuItemContainer button {
