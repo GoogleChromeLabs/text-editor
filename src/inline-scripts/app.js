@@ -127,7 +127,7 @@ app.readFile = async (file, fileHandle) => {
     app.setFocus(true);
   } catch (ex) {
     gaEvent('Error', 'FileRead', ex.name);
-    const msg = `An error occured reading ${app.fileName}`;
+    const msg = `An error occured reading ${app.file.name}`;
     console.error(msg, ex);
     alert(msg);
   }
